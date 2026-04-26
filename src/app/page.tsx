@@ -6,7 +6,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="w-full bg-white flex flex-col z-50">
         {/* Top Bar */}
-        <div className="w-full flex justify-between items-center text-[0.8rem] font-body text-[#555] max-w-[950px] mx-auto px-10 py-2">
+        <div className="w-full flex flex-col sm:flex-row justify-between items-center text-[0.8rem] font-body text-[#555] max-w-[950px] mx-auto px-10 py-2 gap-2 sm:gap-0">
           <span>+1 234 567 8900</span>
           <div className="flex gap-4">
             <a href="#" className="hover:text-teal-DEFAULT transition-colors">Facebook</a>
@@ -18,18 +18,18 @@ export default function Home() {
         <div className="w-full border-b border-[#E0E0E0]"></div>
 
         {/* Main Nav */}
-        <div className="w-full flex justify-between items-center max-w-[950px] mx-auto px-10 py-5">
+        <div className="w-full flex flex-col lg:flex-row justify-between items-center max-w-[950px] mx-auto px-10 py-5 gap-4 lg:gap-0">
           <div className="font-heading font-normal text-[1.2rem] tracking-wide text-teal-DEFAULT uppercase">
             YOUR BRAND
           </div>
-          <div className="flex items-center gap-8 font-heading text-[0.85rem] text-[#2C2C2C]">
+          <div className="flex flex-wrap justify-center items-center gap-4 lg:gap-8 font-heading text-[0.85rem] text-[#2C2C2C]">
             <a href="#" className="hover:text-teal-DEFAULT transition-colors">HOME</a>
             <a href="#" className="hover:text-teal-DEFAULT transition-colors">ABOUT</a>
             <a href="#" className="hover:text-teal-DEFAULT transition-colors">SERVICES</a>
             
-            <div className="relative group cursor-pointer">
+            <div className="relative group cursor-pointer" tabIndex={0}>
               <span className="hover:text-teal-DEFAULT transition-colors flex items-center gap-1">MORE ▾</span>
-              <div className="absolute top-full right-0 mt-4 bg-white border border-[#E0E0E0] hidden group-hover:flex flex-col min-w-[160px] shadow-sm z-50">
+              <div className="absolute top-full right-0 mt-4 bg-white border border-[#E0E0E0] hidden group-hover:flex group-focus:flex group-focus-within:flex flex-col min-w-[160px] shadow-sm z-50">
                 <a href="#" className="px-5 py-3 hover:bg-[#F7F5F0] hover:text-teal-DEFAULT transition-colors uppercase border-b border-[#E0E0E0] last:border-b-0">MEET</a>
                 <a href="#" className="px-5 py-3 hover:bg-[#F7F5F0] hover:text-teal-DEFAULT transition-colors uppercase border-b border-[#E0E0E0] last:border-b-0">CAREERS</a>
                 <a href="#" className="px-5 py-3 hover:bg-[#F7F5F0] hover:text-teal-DEFAULT transition-colors uppercase border-b border-[#E0E0E0] last:border-b-0">NEWS</a>
@@ -59,8 +59,8 @@ export default function Home() {
         </div>
         <div className="w-full h-[320px] relative">
           <Image
-            src="/hero.png"
-            alt="Hero"
+            src="/Hero-Banner.jpeg"
+            alt="Hero Banner"
             fill
             sizes="100vw"
             className="object-cover"
@@ -85,6 +85,9 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-[30px]">
             <div className="flex flex-col items-center text-center">
+              <div className="w-full h-[200px] relative mb-4 overflow-hidden rounded">
+                <Image src="/Road-Freight.jpeg" alt="Road Freight" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+              </div>
               <h3 className="font-heading font-semibold text-[0.85rem] uppercase tracking-[0.08em] mb-4">ROAD FREIGHT</h3>
               <p className="font-body font-light text-[0.85rem] leading-[1.7] mb-8">
                 Reliable delivery across the country. Our modern fleet ensures your goods arrive safely and on time.
@@ -95,6 +98,9 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col items-center text-center">
+              <div className="w-full h-[200px] relative mb-4 overflow-hidden rounded">
+                <Image src="/Warehousing.jpeg" alt="Warehousing" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+              </div>
               <h3 className="font-heading font-semibold text-[0.85rem] uppercase tracking-[0.08em] mb-4">WAREHOUSING</h3>
               <p className="font-body font-light text-[0.85rem] leading-[1.7] mb-8">
                 Secure storage solutions. State-of-the-art facilities equipped with advanced inventory management.
@@ -105,6 +111,9 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col items-center text-center">
+              <div className="w-full h-[200px] relative mb-4 overflow-hidden rounded">
+                <Image src="/Logistics.jpeg" alt="Logistics" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+              </div>
               <h3 className="font-heading font-semibold text-[0.85rem] uppercase tracking-[0.08em] mb-4">LOGISTICS</h3>
               <p className="font-body font-light text-[0.85rem] leading-[1.7] mb-8">
                 End-to-end supply chain management. We optimize your distribution network for peak efficiency.
@@ -139,7 +148,7 @@ export default function Home() {
           {/* Card 1 */}
           <div className="flex flex-col group cursor-pointer">
             <div className="w-full h-[180px] relative mb-4 overflow-hidden">
-              <Image src="/blog_truck.png" alt="Blog 1" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
+              <Image src="/Blog 1 — Supply Chain.jpeg" alt="Supply Chain" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
             </div>
             <h3 className="font-heading text-teal-DEFAULT text-[1rem] leading-snug mb-3">
               How to Optimize Your Supply Chain in 2024
@@ -154,7 +163,7 @@ export default function Home() {
           {/* Card 2 */}
           <div className="flex flex-col group cursor-pointer">
             <div className="w-full h-[180px] relative mb-4 overflow-hidden">
-              <Image src="/blog_warehouse.png" alt="Blog 2" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
+              <Image src="/Blog 2 — Automated Warehousing.jpeg" alt="Automated Warehousing" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
             </div>
             <h3 className="font-heading text-teal-DEFAULT text-[1rem] leading-snug mb-3">
               The Future of Automated Warehousing
@@ -169,7 +178,7 @@ export default function Home() {
           {/* Card 3 */}
           <div className="flex flex-col group cursor-pointer">
             <div className="w-full h-[180px] relative mb-4 overflow-hidden">
-              <Image src="/blog_people.png" alt="Blog 3" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
+              <Image src="/Blog 3 — Human Oversight.jpeg" alt="Human Oversight" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
             </div>
             <h3 className="font-heading text-teal-DEFAULT text-[1rem] leading-snug mb-3">
               Why Human Oversight is Still Necessary in Logistics
@@ -232,6 +241,21 @@ export default function Home() {
           <a href="/contact" className="border-[1.5px] border-teal-DEFAULT rounded-[50px] text-teal-DEFAULT px-8 py-[10px] bg-transparent font-heading transition-colors duration-200 hover:bg-teal-DEFAULT hover:text-white">
             GET IN TOUCH
           </a>
+        </div>
+      </section>
+
+      {/* Image Grid Section */}
+      <section className="w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 w-full">
+          <div className="w-full h-[300px] relative">
+            <Image src="/Tile1-VehicleAutomotive.jpeg" alt="Vehicle Automotive" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+          </div>
+          <div className="w-full h-[300px] relative">
+            <Image src="/Tile 2 — Warehousing.jpeg" alt="Warehousing Tile" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+          </div>
+          <div className="w-full h-[300px] relative">
+            <Image src="/Tile 3 — TeamOperations.jpeg" alt="Team Operations" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+          </div>
         </div>
       </section>
 
