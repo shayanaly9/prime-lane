@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Raleway, Open_Sans } from "next/font/google";
 import "./globals.css";
+import ChatWidget from "./components/ChatWidget";
 
 const raleway = Raleway({
   variable: "--font-raleway",
@@ -29,7 +30,10 @@ export default function RootLayout({
       lang="en"
       className={`${raleway.variable} ${openSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-body">{children}</body>
+      <body className="min-h-full flex flex-col font-body">
+        {children}
+        <ChatWidget />
+      </body>
     </html>
   );
 }

@@ -36,9 +36,9 @@ export default function Home() {
               </div>
             </div>
 
-            <button className="border-[1.5px] border-teal-DEFAULT rounded-[50px] text-teal-DEFAULT px-5 py-[8px] bg-transparent transition-colors duration-200 hover:bg-teal-DEFAULT hover:text-white">
+            <a href="/contact" className="border-[1.5px] border-teal-DEFAULT rounded-[50px] text-teal-DEFAULT px-5 py-[8px] bg-transparent font-heading text-[0.85rem] transition-colors duration-200 hover:bg-teal-DEFAULT hover:text-white">
               GET IN TOUCH
-            </button>
+            </a>
           </div>
         </div>
       </nav>
@@ -62,6 +62,7 @@ export default function Home() {
             src="/hero.png"
             alt="Hero"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
@@ -138,7 +139,7 @@ export default function Home() {
           {/* Card 1 */}
           <div className="flex flex-col group cursor-pointer">
             <div className="w-full h-[180px] relative mb-4 overflow-hidden">
-              <Image src="/blog_truck.png" alt="Blog 1" fill className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
+              <Image src="/blog_truck.png" alt="Blog 1" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
             </div>
             <h3 className="font-heading text-teal-DEFAULT text-[1rem] leading-snug mb-3">
               How to Optimize Your Supply Chain in 2024
@@ -153,7 +154,7 @@ export default function Home() {
           {/* Card 2 */}
           <div className="flex flex-col group cursor-pointer">
             <div className="w-full h-[180px] relative mb-4 overflow-hidden">
-              <Image src="/blog_warehouse.png" alt="Blog 2" fill className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
+              <Image src="/blog_warehouse.png" alt="Blog 2" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
             </div>
             <h3 className="font-heading text-teal-DEFAULT text-[1rem] leading-snug mb-3">
               The Future of Automated Warehousing
@@ -168,7 +169,7 @@ export default function Home() {
           {/* Card 3 */}
           <div className="flex flex-col group cursor-pointer">
             <div className="w-full h-[180px] relative mb-4 overflow-hidden">
-              <Image src="/blog_people.png" alt="Blog 3" fill className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
+              <Image src="/blog_people.png" alt="Blog 3" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-opacity duration-200 group-hover:opacity-90" />
             </div>
             <h3 className="font-heading text-teal-DEFAULT text-[1rem] leading-snug mb-3">
               Why Human Oversight is Still Necessary in Logistics
@@ -228,9 +229,9 @@ export default function Home() {
             </div>
           </div>
 
-          <button className="border-[1.5px] border-teal-DEFAULT rounded-[50px] text-teal-DEFAULT px-8 py-[10px] bg-transparent font-heading transition-colors duration-200 hover:bg-teal-DEFAULT hover:text-white">
+          <a href="/contact" className="border-[1.5px] border-teal-DEFAULT rounded-[50px] text-teal-DEFAULT px-8 py-[10px] bg-transparent font-heading transition-colors duration-200 hover:bg-teal-DEFAULT hover:text-white">
             GET IN TOUCH
-          </button>
+          </a>
         </div>
       </section>
 
