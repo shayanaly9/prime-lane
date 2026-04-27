@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrimeLane Logistics</title>
+    <!-- Google Fonts: Montserrat (400, 600, 700, 800, 900) & Lato (300, 400, 700) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #1a6fd4;
+            --blue-mid: #1558ac;
+            --green: #4aab3a;
+            --dark: #0d1a2b;
+            --text: #1a2e27;
+            --muted: #4a6070;
+            --border: #d0dce8;
+            --white: #ffffff;
+            --off: #f4f8fc;
+            --teal: #0F6E56;
+            --teal-light: #1D9E75;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            color: var(--text);
+            background-color: var(--white);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            background-color: var(--off);
+            border-bottom: 1px solid var(--border);
+            padding: 0.4rem 2rem;
+        }
+
+        .top-bar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar-left, .top-bar-right {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .top-bar a {
+            font-size: 0.78rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .top-bar a:hover {
+            color: var(--blue);
+        }
+
+        /* NAVIGATION */
+        nav {
+          background: #ffffff;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          padding: 0 2rem;
+          box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+        }
+
+        .nav-inner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 70px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        /* Logo area */
+        .logo-wrap {
+          display: flex;
+          align-items: center;
+          gap: 0;
+        }
+
+        .logo-img {
+          height: 44px;
+          width: auto;
+        }
+
+        .nav-divider {
+          width: 1px;
+          height: 32px;
+          background: #d0dce8;
+          margin: 0 16px;
+        }
+
+        .nav-tagline {
+          font-family: 'Lato', sans-serif;
+          font-size: 0.72rem;
+          font-weight: 400;
+          letter-spacing: 3px;
+          color: #6b7f8e;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+
+        /* Nav links row */
+        .nav-links {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        /* Regular nav buttons */
+        .nav-btn {
+          background: none;
+          border: none;
+          font-family: 'Lato', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: #1a2e27;
+          padding: 0.5rem 1.1rem;
+          cursor: pointer;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          transition: color 0.2s;
+          white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+          color: #1a6fd4;
+        }
+
+        /* CTA Button — solid filled teal/green */
+        .nav-cta {
+          background: #1D9E75;
+          color: #ffffff;
+          border: none;
+          border-radius: 5px;
+          font-family: 'Lato', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          padding: 0.6rem 1.5rem;
+          margin-left: 1rem;
+          cursor: pointer;
+          transition: background 0.2s;
+          white-space: nowrap;
+        }
+
+        .nav-cta:hover {
+          background: #0F6E56;
+        }
+
+        /* Dropdown */
+        .nav-item {
+          position: relative;
+        }
+
+        .dropdown {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background: #ffffff;
+          border: 1px solid #d0dce8;
+          border-radius: 6px;
+          min-width: 250px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+          z-index: 999;
+        }
+
+        .nav-item:hover .dropdown {
+          display: block;
+        }
+
+        .dd-link {
+          display: block;
+          padding: 0.65rem 1.1rem;
+          font-family: 'Lato', sans-serif;
+          font-size: 0.85rem;
+          color: #1a2e27;
+          text-decoration: none;
+          border-bottom: 1px solid #f0f0f0;
+          cursor: pointer;
+          transition: background 0.2s, color 0.2s;
+        }
+
+        .dd-link:last-child {
+          border-bottom: none;
+        }
+
+        .dd-link:hover {
+          background: #f4f8fc;
+          color: #1a6fd4;
+        }
+
+        /* HAMBURGER */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--teal);
+            cursor: pointer;
+        }
+
+        /* MOBILE STYLES */
+        @media (max-width: 768px) {
+            .top-bar-right {
+                display: none;
+            }
+            .top-bar-left {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+                width: 100%;
+            }
+            .nav-inner {
+                justify-content: space-between;
+            }
+            .nav-tagline {
+                display: none;
+            }
+            .nav-divider {
+                display: none;
+            }
+            
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--white);
+                border-bottom: 2px solid var(--border);
+                box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+                align-items: stretch;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-item {
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .nav-btn {
+                width: 100%;
+                text-align: left;
+                padding: 1rem 2rem;
+            }
+
+            .nav-cta {
+                margin: 1rem 2rem;
+                text-align: center;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .dropdown {
+                position: static;
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                background-color: var(--off);
+                border-top: 1px solid var(--border);
+                display: none;
+            }
+            
+            .nav-item.active .dropdown {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <div class="top-bar-left">
+                <a href="mailto:contact@primelanelogistics.com.au">✉ contact@primelanelogistics.com.au</a>
+                <a href="tel:+61421821220">📞 +61 421 821 220</a>
+            </div>
+            <div class="top-bar-right">
+                <a href="#">Facebook</a>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVIGATION -->
+    <nav>
+      <div class="nav-inner">
+
+        <!-- LEFT: Logo + Tagline -->
+        <div class="logo-wrap">
+          <img src="./logo.png" alt="PrimeLane Logistics" class="logo-img">
+          <div class="nav-divider"></div>
+          <span class="nav-tagline">STREAMLINING EVERY MILE</span>
+        </div>
+
+        <button class="hamburger" id="hamburger-btn">☰</button>
+
+        <!-- RIGHT: Nav Links -->
+        <div class="nav-links" id="nav-links">
+
+          <div class="nav-item" id="services-item">
+            <button class="nav-btn">SERVICES ▾</button>
+            <div class="dropdown">
+              <a class="dd-link">Australia → Dubai Containers</a>
+              <a class="dd-link">Domestic Freight</a>
+              <a class="dd-link">Customs & Documentation</a>
+              <a class="dd-link">International Sea Freight</a>
+              <a class="dd-link">International Air Freight</a>
+              <a class="dd-link">Vehicle & Automotive Transport</a>
+              <a class="dd-link">Wharf & Container Cartage</a>
+              <a class="dd-link">Dangerous Goods Transport</a>
+              <a class="dd-link">Local & Industrial Freight</a>
+            </div>
+          </div>
+
+          <div class="nav-item">
+            <button class="nav-btn">ABOUT ▾</button>
+            <div class="dropdown">
+              <a class="dd-link">Why PrimeLane</a>
+              <a class="dd-link">Our Team</a>
+              <a class="dd-link">Licensing & Compliance</a>
+            </div>
+          </div>
+
+          <div class="nav-item">
+            <button class="nav-btn">HELP CENTRE ▾</button>
+            <div class="dropdown">
+              <a class="dd-link">FAQ</a>
+              <a class="dd-link">How to Book</a>
+              <a class="dd-link">Shipment Tracking</a>
+            </div>
+          </div>
+
+          <button class="nav-cta">GET IN TOUCH</button>
+
+        </div>
+      </div>
+    </nav>
+
+    <main>
+        <!-- SECTIONS GO HERE -->
+    </main>
+
+    <script>
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const navLinks = document.getElementById('nav-links');
+        const servicesItem = document.getElementById('services-item');
+
+        hamburgerBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Mobile dropdown toggle for services
+        servicesItem.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                // Prevent navigating if clicking the main Services link
+                if (e.target.classList.contains('nav-btn')) {
+                    e.preventDefault();
+                    servicesItem.classList.toggle('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
