@@ -2,9 +2,155 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
+const serviceModals = [
+  {
+    id: 1,
+    title: "Australia → Dubai (Primary Route)",
+    subtitle: "Our flagship international service — direct container freight from Australia to Dubai, UAE via Jebel Ali Port.",
+    sections: [
+      {
+        title: "SERVICE OPTIONS",
+        items: [
+          "FCL (Full Container Load) — 20ft and 40ft containers for larger cargo volumes",
+          "LCL (Less-than-Container Load) — Share container space for smaller shipments",
+          "Reefer Containers — Temperature-controlled for perishables or chemicals",
+          "Dangerous Goods — DG-licensed for Class 2–9 cargo",
+          "Break-bulk & Project Cargo — Oversized or non-containerisable loads"
+        ]
+      },
+      {
+        title: "ROUTE DETAILS",
+        items: [
+          "Origin: Melbourne, Sydney, or Brisbane (Port of Melbourne preferred)",
+          "Destination: Jebel Ali Port, Dubai — including delivery to Dubai Free Zones",
+          "Transit time: approximately 18–22 days by sea"
+        ]
+      },
+      {
+        title: "WE HANDLE",
+        items: [
+          "Export customs clearance (Australia) and import customs coordination (UAE)",
+          "Bill of Lading, Certificate of Origin, packing list, and commercial invoice documentation",
+          "Door-to-port, port-to-port, or full door-to-door options"
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "International Sea Freight",
+    subtitle: "Ocean freight services connecting Australia to destinations worldwide — beyond the Dubai corridor.",
+    sections: [
+      {
+        title: "DESTINATIONS",
+        items: [
+          "Middle East: Dubai (primary), Abu Dhabi, Sharjah, Saudi Arabia",
+          "Asia: Singapore, Hong Kong, China, India, Malaysia",
+          "Europe and Americas: contact us to discuss routing options"
+        ]
+      },
+      {
+        title: "CONTAINER TYPES",
+        items: [
+          "Standard dry containers (20ft / 40ft / 40ft HC)",
+          "Reefer (refrigerated) containers for temperature-sensitive goods",
+          "Open-top and flat-rack for oversized or heavy cargo"
+        ]
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "International Air Freight",
+    subtitle: "Fast, reliable air freight from Australia for time-sensitive or high-value shipments.",
+    sections: [
+      {
+        title: "BEST SUITED FOR",
+        items: [
+          "Urgent shipments where sea freight lead times are too long",
+          "High-value goods such as electronics, automotive parts, or luxury items",
+          "Perishables and time-critical pharmaceutical or medical cargo"
+        ]
+      },
+      {
+        title: "KEY DETAILS",
+        items: [
+          "Transit to Dubai: approximately 3–5 business days",
+          "Airport-to-airport or door-to-door service available",
+          "Dangerous Goods air transport available (IATA certified)"
+        ]
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "Vehicle & Automotive Transport",
+    subtitle: "Professional car carrier services across Australia — from everyday vehicles to prestige and non-runners.",
+    sections: [
+      {
+        title: "SERVICES INCLUDE",
+        items: [
+          "Open Carrier — cost-effective transport for standard vehicles",
+          "Enclosed Carrier — weather-protected transport for prestige, classic, or high-value vehicles",
+          "Non-Runner / Salvage — winch-equipped trucks for vehicles that do not start",
+          "Auction & Dealership Pickups — Manheim, Pickles, and other auction houses across Melbourne and major cities",
+          "Interstate Last-Mile Delivery — receiving vehicles from interstate carriers and completing local delivery"
+        ]
+      },
+      {
+        title: "OUR COMMITMENT",
+        items: [
+          "Condition reports with photos taken before and after every vehicle movement",
+          "Full insurance coverage during transit"
+        ]
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Wharf & Container Cartage",
+    subtitle: "Reliable port cartage services from the Port of Melbourne and surrounding wharves.",
+    sections: [
+      {
+        title: "SERVICES INCLUDE",
+        items: [
+          "Side-Loader — ground-level container delivery at sites without a loading dock",
+          "Skeletal Trailer — fast wharf-to-warehouse drop-and-swap operations",
+          "Overweight / Oversize — high-mass transport with applicable permits",
+          "Reefer Services — power-plugged transport for temperature-controlled cargo",
+          "Container De-hiring — empty container returns to designated depots"
+        ]
+      },
+      {
+        title: "COVERAGE",
+        items: [
+          "Port of Melbourne, Tarneit, Broadmeadows, Western Suburbs, and greater Melbourne"
+        ]
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: "Local & Industrial Freight",
+    subtitle: "Domestic freight solutions for automotive parts, chemical drums, palletised goods, and more.",
+    sections: [
+      {
+        title: "SERVICES INCLUDE",
+        items: [
+          "Tautliner / Curtain-Sider — side-loading for pallets, automotive parts, and chemical drums",
+          "Hot-Shot / Same-Day — premium urgent delivery for critical components",
+          "DG-Placarded Transport — licensed for Dangerous Goods Classes 2–9 nationally",
+          "Automotive Parts Freight — specialist handling for dealership and warehouse supply chains"
+        ]
+      }
+    ]
+  }
+];
+
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openServiceModal, setOpenServiceModal] = useState<number | null>(null);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -17,23 +163,36 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setOpenServiceModal(null);
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <main className="w-full flex flex-col items-center">
-      {/* Navigation Bar */}
-      <nav ref={navRef} className="w-full bg-white z-50 sticky top-0" style={{ padding: '12px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8ede9' }}>
+      <nav ref={navRef} className="w-full bg-white z-50 sticky top-0 px-4 md:px-10 flex justify-between items-center gap-4" style={{ borderBottom: '1px solid #e8ede9', height: '64px' }}>
         {/* Left Side */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: '40px', height: '40px', background: '#e8f5f0', borderRadius: '4px', border: '1px solid #c0ddd4', display: 'inline-block', marginRight: '10px', verticalAlign: 'middle' }}></div>
-          <span style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#888', verticalAlign: 'middle' }}>
-            STREAMLINING EVERY MILE
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <Image
+            src="/Prime-lane-logo.png"
+            alt="PrimeLane Logistics"
+            width={110}
+            height={36}
+            style={{ objectFit: 'contain' }}
+            priority
+          />
         </div>
 
         {/* Right Side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div className="flex flex-wrap items-center gap-2">
           {/* Services Dropdown */}
           <div style={{ position: 'relative' }}>
-            <button 
+            <button
               onClick={() => setOpenDropdown(openDropdown === 'services' ? null : 'services')}
               style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#333', padding: '8px 14px', cursor: 'pointer', borderRadius: '4px', background: 'none', border: 'none' }}
               className="hover:bg-[#f0f4f8]"
@@ -76,7 +235,7 @@ export default function Home() {
 
           {/* About Dropdown */}
           <div style={{ position: 'relative' }}>
-            <button 
+            <button
               onClick={() => setOpenDropdown(openDropdown === 'about' ? null : 'about')}
               style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#333', padding: '8px 14px', cursor: 'pointer', borderRadius: '4px', background: 'none', border: 'none' }}
               className="hover:bg-[#f0f4f8]"
@@ -100,7 +259,7 @@ export default function Home() {
 
           {/* Help Centre Dropdown */}
           <div style={{ position: 'relative' }}>
-            <button 
+            <button
               onClick={() => setOpenDropdown(openDropdown === 'help' ? null : 'help')}
               style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#333', padding: '8px 14px', cursor: 'pointer', borderRadius: '4px', background: 'none', border: 'none' }}
               className="hover:bg-[#f0f4f8]"
@@ -123,18 +282,36 @@ export default function Home() {
           </div>
 
           {/* CTA Button */}
-          <button style={{ background: 'linear-gradient(to right, #0F6E56, #2563EB)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '4px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', cursor: 'pointer', marginLeft: '8px' }}>
+          <button 
+            onClick={() => {
+              document.getElementById('contact')?.scrollIntoView({ 
+                behavior: 'smooth' 
+              })
+            }}
+            style={{ background: 'linear-gradient(to right, #0F6E56, #2563EB)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '4px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', cursor: 'pointer', marginLeft: '8px' }}>
             GET IN TOUCH
           </button>
         </div>
       </nav>
 
-      <section 
-        className="w-full min-h-screen flex flex-col items-center justify-center text-center px-10"
-        style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2e1f 100%)' }}
+      <section
+        className="w-full min-h-screen flex flex-col items-center justify-center text-center px-5 md:px-10"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10,22,40,0.85) 0%, rgba(13,33,55,0.80) 50%, rgba(10,46,31,0.80) 100%), url('/Hero-Banner.jpeg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
-        {/* Logo Placeholder */}
-        <div className="w-[80px] h-[80px] bg-white mx-auto mb-4"></div>
+        {/* Logo */}
+        <Image 
+          src="/Prime-lane-logo.png"
+          alt="PrimeLane Logistics"
+          width={160}
+          height={80}
+          style={{ objectFit: 'contain', marginBottom: '12px' }}
+          priority
+        />
         <p className="mb-[24px]" style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>
           STREAMLINING EVERY MILE
         </p>
@@ -145,7 +322,7 @@ export default function Home() {
         </div>
 
         {/* Main Heading */}
-        <h1 className="mb-[24px]" style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '64px', lineHeight: '1.1' }}>
+        <h1 className="mb-[24px] text-4xl sm:text-5xl md:text-[64px] font-bold leading-[1.1]" style={{ fontFamily: 'Arial, sans-serif' }}>
           <div style={{ color: 'white' }}>Moving Cargo From</div>
           <div>
             <span style={{ color: '#4A9EFF' }}>Australia</span>
@@ -161,7 +338,13 @@ export default function Home() {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button style={{ background: '#0F6E56', color: 'white', fontWeight: 700, padding: '16px 36px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', border: 'none' }}>
+          <button 
+            onClick={() => {
+              document.getElementById('contact')?.scrollIntoView({ 
+                behavior: 'smooth' 
+              })
+            }}
+            style={{ background: '#0F6E56', color: 'white', fontWeight: 700, padding: '16px 36px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', border: 'none', cursor: 'pointer' }}>
             REQUEST A QUOTE
           </button>
           <button style={{ background: 'transparent', border: '1.5px solid rgba(255, 255, 255, 0.4)', color: 'white', padding: '16px 36px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>
@@ -171,9 +354,9 @@ export default function Home() {
       </section>
 
       {/* BAR 1 — Stats Bar */}
-      <section 
-        className="w-full flex justify-center text-center"
-        style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2e1f 100%)', padding: '32px 40px' }}
+      <section
+        className="w-full flex justify-center text-center px-4 py-8 md:px-10"
+        style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2e1f 100%)' }}
       >
         <div className="flex flex-row justify-between items-center w-full max-w-[1000px] gap-4 overflow-x-auto overflow-y-hidden" style={{ scrollbarWidth: 'none' }}>
           {/* Item 1 */}
@@ -181,7 +364,7 @@ export default function Home() {
             <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '22px', color: '#4A9EFF', marginBottom: '4px' }}>AU &rarr; UAE</div>
             <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>PRIMARY ROUTE</div>
           </div>
-          
+
           <div style={{ width: '1px', height: '40px', background: 'rgba(255, 255, 255, 0.1)' }} className="shrink-0"></div>
 
           {/* Item 2 */}
@@ -209,9 +392,9 @@ export default function Home() {
       </section>
 
       {/* BAR 2 — Route Bar */}
-      <section 
-        className="w-full flex justify-center text-center overflow-x-auto"
-        style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', padding: '14px 40px', scrollbarWidth: 'none' }}
+      <section
+        className="w-full flex justify-center text-center overflow-x-auto px-4 py-3 md:px-10"
+        style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', scrollbarWidth: 'none' }}
       >
         <div className="flex flex-row items-center justify-center w-full min-w-max">
           <div style={{ background: 'rgba(0, 0, 0, 0.2)', borderRadius: '999px', padding: '4px 14px', fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'white', whiteSpace: 'nowrap' }}>
@@ -233,7 +416,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="w-full" style={{ background: '#f0f4f8', padding: '64px 40px' }}>
+      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
         <div className="mx-auto max-w-[1200px]">
           {/* Header */}
           <div className="mb-[40px]">
@@ -251,7 +434,7 @@ export default function Home() {
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20px]">
             {/* Card 1 */}
-            <div className="flex flex-col bg-white cursor-pointer" style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(1)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <div className="text-2xl mb-4">🌐</div>
               <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Australia &rarr; Dubai (Primary Route)</h3>
               <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
@@ -263,7 +446,7 @@ export default function Home() {
             </div>
 
             {/* Card 2 */}
-            <div className="flex flex-col bg-white cursor-pointer" style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(2)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <div className="text-2xl mb-4">🚢</div>
               <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Sea Freight</h3>
               <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
@@ -275,7 +458,7 @@ export default function Home() {
             </div>
 
             {/* Card 3 */}
-            <div className="flex flex-col bg-white cursor-pointer" style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(3)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <div className="text-2xl mb-4">✈️</div>
               <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Air Freight</h3>
               <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
@@ -287,7 +470,7 @@ export default function Home() {
             </div>
 
             {/* Card 4 */}
-            <div className="flex flex-col bg-white cursor-pointer" style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(4)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <div className="text-2xl mb-4">🚗</div>
               <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Vehicle & Automotive Transport</h3>
               <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
@@ -299,7 +482,7 @@ export default function Home() {
             </div>
 
             {/* Card 5 */}
-            <div className="flex flex-col bg-white cursor-pointer" style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(5)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <div className="text-2xl mb-4">⚓</div>
               <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Wharf & Container Cartage</h3>
               <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
@@ -311,7 +494,7 @@ export default function Home() {
             </div>
 
             {/* Card 6 */}
-            <div className="flex flex-col bg-white cursor-pointer" style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(6)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               <div className="text-2xl mb-4">📦</div>
               <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Local & Industrial Freight</h3>
               <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
@@ -325,7 +508,7 @@ export default function Home() {
         </div>
       </section>
       {/* How to Book With Us Section */}
-      <section className="w-full" style={{ background: 'white', padding: '64px 40px' }}>
+      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: 'white' }}>
         <div className="mx-auto max-w-[1200px]">
           {/* Header */}
           <div className="mb-[48px]">
@@ -391,7 +574,7 @@ export default function Home() {
 
 
       {/* Key Routes Section */}
-      <section className="w-full" style={{ background: '#f0f4f8', padding: '64px 40px' }}>
+      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
         <div className="mx-auto max-w-[1200px]">
           {/* Header */}
           <div className="mb-[32px]">
@@ -418,7 +601,7 @@ export default function Home() {
                 <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', textAlign: 'center', marginBottom: '8px' }}>
                   SEA FREIGHT &middot; ~18&ndash;22 DAYS TRANSIT
                 </div>
-                
+
                 {/* Line with dots */}
                 <div className="w-full flex items-center justify-between relative mb-3">
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4AE89A', zIndex: 10 }}></div>
@@ -453,7 +636,7 @@ export default function Home() {
                 <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', textAlign: 'center', marginBottom: '8px' }}>
                   INTERNATIONAL &middot; MULTIPLE DESTINATIONS
                 </div>
-                
+
                 {/* Line with dots */}
                 <div className="w-full flex items-center justify-between relative mb-3">
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4A9EFF', zIndex: 10 }}></div>
@@ -479,7 +662,7 @@ export default function Home() {
       </section>
 
       {/* About Us Section */}
-      <section className="w-full" style={{ background: 'white', padding: '64px 40px' }}>
+      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: 'white' }}>
         <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row gap-[48px] items-start">
           {/* Left Column */}
           <div className="w-full md:w-[55%]">
@@ -558,7 +741,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="w-full" style={{ background: '#f0f4f8', padding: '64px 40px' }}>
+      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
         <div className="mx-auto max-w-[1200px]">
           {/* Header */}
           <div className="mb-[32px]">
@@ -574,7 +757,7 @@ export default function Home() {
           <div className="flex flex-col w-full">
             {/* Q1 */}
             <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div 
+              <div
                 onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
               >
@@ -594,7 +777,7 @@ export default function Home() {
 
             {/* Q2 */}
             <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div 
+              <div
                 onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
               >
@@ -614,7 +797,7 @@ export default function Home() {
 
             {/* Q3 */}
             <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div 
+              <div
                 onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
               >
@@ -634,7 +817,7 @@ export default function Home() {
 
             {/* Q4 */}
             <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div 
+              <div
                 onClick={() => setOpenFaq(openFaq === 4 ? null : 4)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
               >
@@ -654,7 +837,7 @@ export default function Home() {
 
             {/* Q5 */}
             <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div 
+              <div
                 onClick={() => setOpenFaq(openFaq === 5 ? null : 5)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
               >
@@ -674,7 +857,7 @@ export default function Home() {
 
             {/* Q6 */}
             <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div 
+              <div
                 onClick={() => setOpenFaq(openFaq === 6 ? null : 6)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
               >
@@ -696,7 +879,7 @@ export default function Home() {
       </section>
 
       {/* Get In Touch Section */}
-      <section className="w-full" style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2e1f 100%)', padding: '72px 40px' }}>
+      <section id="contact" className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2e1f 100%)' }}>
         <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row gap-[48px]">
           {/* Left Column */}
           <div className="w-full md:w-[55%] flex flex-col">
@@ -820,7 +1003,7 @@ export default function Home() {
               </div>
 
               {/* Button */}
-              <button 
+              <button
                 onClick={() => window.location.href = 'mailto:contact@primelanelogistics.com.au'}
                 style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', color: 'white', border: 'none', width: '100%', padding: '14px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', marginTop: '4px' }}
               >
@@ -832,11 +1015,19 @@ export default function Home() {
       </section>
 
       {/* Footer Section */}
-      <footer className="w-full" style={{ background: '#060f1a', padding: '48px 40px 24px', textAlign: 'center', borderTop: '1px solid rgba(37, 99, 235, 0.3)' }}>
+      <footer className="w-full px-5 py-10 md:px-10" style={{ background: '#060f1a', textAlign: 'center', borderTop: '1px solid rgba(37, 99, 235, 0.3)' }}>
         <div className="mx-auto max-w-[1200px] flex flex-col items-center">
-          {/* Logo Placeholder */}
-          <div style={{ width: '48px', height: '48px', background: 'rgba(255, 255, 255, 0.15)', borderRadius: '4px', margin: '0 auto 12px' }}></div>
-          
+          {/* Logo */}
+          <div style={{ margin: '0 auto 12px' }}>
+            <Image
+              src="/Prime-lane-logo.png"
+              alt="PrimeLane Logistics"
+              width={100}
+              height={44}
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+
           {/* Tagline */}
           <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', marginBottom: '16px' }}>
             STREAMLINING EVERY MILE
@@ -850,7 +1041,7 @@ export default function Home() {
           </div>
 
           {/* Nav Links */}
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: '32px', marginBottom: '28px' }}>
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 mb-7">
             <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>SERVICES</a>
             <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>ABOUT</a>
             <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>HELP CENTRE</a>
@@ -866,6 +1057,64 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Service Modal */}
+      {openServiceModal && (
+        <div
+          onClick={() => setOpenServiceModal(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: 'white', borderRadius: '12px', maxWidth: '500px', width: '100%', maxHeight: '85vh', overflowY: 'auto', padding: '32px', position: 'relative' }}
+          >
+            <button
+              onClick={() => setOpenServiceModal(null)}
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '20px', color: '#888', cursor: 'pointer' }}
+            >
+              &times;
+            </button>
+
+            {serviceModals.find(m => m.id === openServiceModal) && (
+              <>
+                <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '24px', color: '#0a1628', marginBottom: '8px', paddingRight: '20px' }}>
+                  {serviceModals.find(m => m.id === openServiceModal)?.title}
+                </h2>
+                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#555', marginBottom: '24px', lineHeight: 1.6 }}>
+                  {serviceModals.find(m => m.id === openServiceModal)?.subtitle}
+                </p>
+
+                {serviceModals.find(m => m.id === openServiceModal)?.sections.map((section, idx) => (
+                  <div key={idx} style={{ marginBottom: '24px' }}>
+                    <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
+                      {section.title}
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '20px', listStyleType: 'disc' }}>
+                      {section.items.map((item, i) => (
+                        <li key={i} style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#333', lineHeight: 2 }}>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+
+                <div style={{ marginTop: '32px' }}>
+                  <button
+                    onClick={() => window.location.href = "mailto:contact@primelanelogistics.com.au"}
+                    style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', color: 'white', width: '100%', padding: '14px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', cursor: 'pointer' }}
+                  >
+                    ✉ EMAIL US TO BOOK THIS SERVICE
+                  </button>
+                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#888', textAlign: 'center', marginTop: '10px' }}>
+                    or call <a href="tel:+61421821220" style={{ color: '#0F6E56', fontWeight: 700, textDecoration: 'none' }}>+61 421 821 220</a>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
