@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
 const serviceModals = [
@@ -148,6 +149,8 @@ const serviceModals = [
 ];
 
 export default function Home() {
+  const [hoveredButton, setHoveredButton] = useState<number | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openServiceModal, setOpenServiceModal] = useState<number | null>(null);
@@ -183,7 +186,7 @@ export default function Home() {
             alt="PrimeLane Logistics"
             width={110}
             height={36}
-            style={{ objectFit: 'contain' }}
+            style={{ objectFit: 'contain', width: 'auto' }}
             priority
           />
         </div>
@@ -282,15 +285,11 @@ export default function Home() {
           </div>
 
           {/* CTA Button */}
-          <button 
-            onClick={() => {
-              document.getElementById('contact')?.scrollIntoView({ 
-                behavior: 'smooth' 
-              })
-            }}
-            style={{ background: 'linear-gradient(to right, #0F6E56, #2563EB)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '4px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', cursor: 'pointer', marginLeft: '8px' }}>
+          <Link 
+            href="/contact"
+            style={{ background: 'linear-gradient(to right, #0F6E56, #2563EB)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '4px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', cursor: 'pointer', marginLeft: '8px', textDecoration: 'none', display: 'inline-block' }}>
             GET IN TOUCH
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -305,11 +304,11 @@ export default function Home() {
       >
         {/* Logo */}
         <Image 
-          src="/Prime-lane-logo.png"
+          src="/logo-2.png"
           alt="PrimeLane Logistics"
           width={160}
           height={80}
-          style={{ objectFit: 'contain', marginBottom: '12px' }}
+          style={{ objectFit: 'contain', marginBottom: '12px', width: 'auto' }}
           priority
         />
         <p className="mb-[24px]" style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>
@@ -339,15 +338,49 @@ export default function Home() {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <button 
-            onClick={() => {
-              document.getElementById('contact')?.scrollIntoView({ 
-                behavior: 'smooth' 
-              })
+            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            onMouseEnter={() => setHoveredButton(1)}
+            onMouseLeave={() => setHoveredButton(null)}
+            style={{ 
+              background: hoveredButton === 1 ? '#0a4f3e' : '#0F6E56', 
+              color: 'white', 
+              border: 'none', 
+              padding: '16px 36px', 
+              borderRadius: '6px', 
+              fontFamily: 'Arial, sans-serif', 
+              fontWeight: 'bold', 
+              fontSize: '13px', 
+              letterSpacing: '1px', 
+              textTransform: 'uppercase', 
+              cursor: 'pointer',
+              transition: 'all 0.25s ease',
+              transform: hoveredButton === 1 ? 'translateY(-2px)' : 'translateY(0)',
+              boxShadow: hoveredButton === 1 ? '0 8px 24px rgba(15,110,86,0.4)' : 'none'
             }}
-            style={{ background: '#0F6E56', color: 'white', fontWeight: 700, padding: '16px 36px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', border: 'none', cursor: 'pointer' }}>
+          >
             REQUEST A QUOTE
           </button>
-          <button style={{ background: 'transparent', border: '1.5px solid rgba(255, 255, 255, 0.4)', color: 'white', padding: '16px 36px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          <button 
+            onClick={() => document.getElementById('freight-corridors')?.scrollIntoView({ behavior: 'smooth' })}
+            onMouseEnter={() => setHoveredButton(2)}
+            onMouseLeave={() => setHoveredButton(null)}
+            style={{ 
+              background: hoveredButton === 2 ? 'rgba(255,255,255,0.1)' : 'transparent', 
+              color: 'white', 
+              border: hoveredButton === 2 ? '1.5px solid rgba(255,255,255,0.9)' : '1.5px solid rgba(255,255,255,0.5)', 
+              padding: '16px 36px', 
+              borderRadius: '6px', 
+              fontFamily: 'Arial, sans-serif', 
+              fontWeight: 'bold', 
+              fontSize: '13px', 
+              letterSpacing: '1px', 
+              textTransform: 'uppercase', 
+              cursor: 'pointer',
+              transition: 'all 0.25s ease',
+              transform: hoveredButton === 2 ? 'translateY(-2px)' : 'translateY(0)',
+              boxShadow: hoveredButton === 2 ? '0 8px 24px rgba(255,255,255,0.1)' : 'none'
+            }}
+          >
             AUSTRALIA &rarr; DUBAI ROUTE
           </button>
         </div>
@@ -434,74 +467,320 @@ export default function Home() {
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20px]">
             {/* Card 1 */}
-            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(1)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <div className="text-2xl mb-4">🌐</div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Australia &rarr; Dubai (Primary Route)</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                FCL and LCL container shipping from all major Australian ports direct to Jebel Ali, Dubai.
-              </p>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#2563EB' }}>
-                LEARN MORE &rarr;
+            <div 
+              className="flex flex-col bg-white overflow-hidden" 
+              onClick={() => setOpenServiceModal(1)}
+              onMouseEnter={() => setHoveredCard(1)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{ 
+                borderRadius: '8px', 
+                padding: '0 0 24px 0', 
+                borderLeft: hoveredCard === 1 ? '3px solid #0F6E56' : '3px solid #2563EB', 
+                boxShadow: hoveredCard === 1 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+                transform: hoveredCard === 1 ? 'translateY(-8px)' : 'translateY(0)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
+                <Image
+                  src="/Cards/Card 1.jpeg"
+                  alt="Australia to Dubai"
+                  width={600}
+                  height={160}
+                  style={{ 
+                    width: '100%', 
+                    height: '160px', 
+                    objectFit: 'cover',
+                    borderRadius: '8px 8px 0 0',
+                    transform: hoveredCard === 1 ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'transform 0.4s ease'
+                  }}
+                />
+              </div>
+              <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
+                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Australia &rarr; Dubai (Primary Route)</h3>
+                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                  FCL and LCL container shipping from all major Australian ports direct to Jebel Ali, Dubai.
+                </p>
+                <div style={{ 
+                  fontFamily: 'Arial, sans-serif', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  letterSpacing: '1px', 
+                  textTransform: 'uppercase', 
+                  color: hoveredCard === 1 ? '#0F6E56' : '#2563EB',
+                  transition: 'color 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  LEARN MORE <span style={{ transform: hoveredCard === 1 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                </div>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(2)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <div className="text-2xl mb-4">🚢</div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Sea Freight</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                Global ocean freight services beyond the Australia&ndash;Dubai corridor, including Asia, Europe, and the Americas.
-              </p>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#2563EB' }}>
-                LEARN MORE &rarr;
+            <div 
+              className="flex flex-col bg-white overflow-hidden" 
+              onClick={() => setOpenServiceModal(2)}
+              onMouseEnter={() => setHoveredCard(2)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{ 
+                borderRadius: '8px', 
+                padding: '0 0 24px 0', 
+                borderLeft: hoveredCard === 2 ? '3px solid #0F6E56' : '3px solid #16a34a', 
+                boxShadow: hoveredCard === 2 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+                transform: hoveredCard === 2 ? 'translateY(-8px)' : 'translateY(0)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
+                <Image
+                  src="/Cards/Card 2.jpeg"
+                  alt="International Sea Freight"
+                  width={600}
+                  height={160}
+                  style={{ 
+                    width: '100%', 
+                    height: '160px', 
+                    objectFit: 'cover',
+                    borderRadius: '8px 8px 0 0',
+                    transform: hoveredCard === 2 ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'transform 0.4s ease'
+                  }}
+                />
+              </div>
+              <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
+                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Sea Freight</h3>
+                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                  Global ocean freight services beyond the Australia&ndash;Dubai corridor, including Asia, Europe, and the Americas.
+                </p>
+                <div style={{ 
+                  fontFamily: 'Arial, sans-serif', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  letterSpacing: '1px', 
+                  textTransform: 'uppercase', 
+                  color: hoveredCard === 2 ? '#0F6E56' : '#2563EB',
+                  transition: 'color 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  LEARN MORE <span style={{ transform: hoveredCard === 2 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                </div>
               </div>
             </div>
 
             {/* Card 3 */}
-            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(3)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <div className="text-2xl mb-4">✈️</div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Air Freight</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                Time-sensitive cargo handled with speed and care. Ideal for urgent shipments and high-value goods.
-              </p>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#2563EB' }}>
-                LEARN MORE &rarr;
+            <div 
+              className="flex flex-col bg-white overflow-hidden" 
+              onClick={() => setOpenServiceModal(3)}
+              onMouseEnter={() => setHoveredCard(3)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{ 
+                borderRadius: '8px', 
+                padding: '0 0 24px 0', 
+                borderLeft: hoveredCard === 3 ? '3px solid #0F6E56' : '3px solid #2563EB', 
+                boxShadow: hoveredCard === 3 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+                transform: hoveredCard === 3 ? 'translateY(-8px)' : 'translateY(0)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
+                <Image
+                  src="/Cards/Card 3.jpeg"
+                  alt="International Air Freight"
+                  width={600}
+                  height={160}
+                  style={{ 
+                    width: '100%', 
+                    height: '160px', 
+                    objectFit: 'cover',
+                    borderRadius: '8px 8px 0 0',
+                    transform: hoveredCard === 3 ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'transform 0.4s ease'
+                  }}
+                />
+              </div>
+              <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
+                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Air Freight</h3>
+                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                  Time-sensitive cargo handled with speed and care. Ideal for urgent shipments and high-value goods.
+                </p>
+                <div style={{ 
+                  fontFamily: 'Arial, sans-serif', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  letterSpacing: '1px', 
+                  textTransform: 'uppercase', 
+                  color: hoveredCard === 3 ? '#0F6E56' : '#2563EB',
+                  transition: 'color 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  LEARN MORE <span style={{ transform: hoveredCard === 3 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                </div>
               </div>
             </div>
 
             {/* Card 4 */}
-            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(4)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <div className="text-2xl mb-4">🚗</div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Vehicle & Automotive Transport</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                Open and enclosed car carriers. Auction pickups, dealership deliveries, non-runners, and prestige vehicles.
-              </p>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#2563EB' }}>
-                LEARN MORE &rarr;
+            <div 
+              className="flex flex-col bg-white overflow-hidden" 
+              onClick={() => setOpenServiceModal(4)}
+              onMouseEnter={() => setHoveredCard(4)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{ 
+                borderRadius: '8px', 
+                padding: '0 0 24px 0', 
+                borderLeft: hoveredCard === 4 ? '3px solid #0F6E56' : '3px solid #16a34a', 
+                boxShadow: hoveredCard === 4 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+                transform: hoveredCard === 4 ? 'translateY(-8px)' : 'translateY(0)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
+                <Image
+                  src="/Cards/Card 4.jpeg"
+                  alt="Vehicle & Automotive Transport"
+                  width={600}
+                  height={160}
+                  style={{ 
+                    width: '100%', 
+                    height: '160px', 
+                    objectFit: 'cover',
+                    borderRadius: '8px 8px 0 0',
+                    transform: hoveredCard === 4 ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'transform 0.4s ease'
+                  }}
+                />
+              </div>
+              <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
+                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Vehicle & Automotive Transport</h3>
+                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                  Open and enclosed car carriers. Auction pickups, dealership deliveries, non-runners, and prestige vehicles.
+                </p>
+                <div style={{ 
+                  fontFamily: 'Arial, sans-serif', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  letterSpacing: '1px', 
+                  textTransform: 'uppercase', 
+                  color: hoveredCard === 4 ? '#0F6E56' : '#2563EB',
+                  transition: 'color 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  LEARN MORE <span style={{ transform: hoveredCard === 4 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                </div>
               </div>
             </div>
 
             {/* Card 5 */}
-            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(5)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #2563EB', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <div className="text-2xl mb-4">⚓</div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Wharf & Container Cartage</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                Side-loaders, skeletal trailers, drop-and-swap operations from the Port of Melbourne and surrounding wharves.
-              </p>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#2563EB' }}>
-                LEARN MORE &rarr;
+            <div 
+              className="flex flex-col bg-white overflow-hidden" 
+              onClick={() => setOpenServiceModal(5)}
+              onMouseEnter={() => setHoveredCard(5)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{ 
+                borderRadius: '8px', 
+                padding: '0 0 24px 0', 
+                borderLeft: hoveredCard === 5 ? '3px solid #0F6E56' : '3px solid #2563EB', 
+                boxShadow: hoveredCard === 5 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+                transform: hoveredCard === 5 ? 'translateY(-8px)' : 'translateY(0)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
+                <Image
+                  src="/Cards/Card 5.jpeg"
+                  alt="Wharf & Container Cartage"
+                  width={600}
+                  height={160}
+                  style={{ 
+                    width: '100%', 
+                    height: '160px', 
+                    objectFit: 'cover',
+                    borderRadius: '8px 8px 0 0',
+                    transform: hoveredCard === 5 ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'transform 0.4s ease'
+                  }}
+                />
+              </div>
+              <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
+                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Wharf & Container Cartage</h3>
+                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                  Side-loaders, skeletal trailers, drop-and-swap operations from the Port of Melbourne and surrounding wharves.
+                </p>
+                <div style={{ 
+                  fontFamily: 'Arial, sans-serif', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  letterSpacing: '1px', 
+                  textTransform: 'uppercase', 
+                  color: hoveredCard === 5 ? '#0F6E56' : '#2563EB',
+                  transition: 'color 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  LEARN MORE <span style={{ transform: hoveredCard === 5 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                </div>
               </div>
             </div>
 
             {/* Card 6 */}
-            <div className="flex flex-col bg-white cursor-pointer" onClick={() => setOpenServiceModal(6)} style={{ borderRadius: '8px', padding: '24px', borderLeft: '3px solid #16a34a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <div className="text-2xl mb-4">📦</div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Local & Industrial Freight</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                Tautliner/curtain-sider services, hot-shot urgent deliveries, and palletised goods across Australia.
-              </p>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#2563EB' }}>
-                LEARN MORE &rarr;
+            <div 
+              className="flex flex-col bg-white overflow-hidden" 
+              onClick={() => setOpenServiceModal(6)}
+              onMouseEnter={() => setHoveredCard(6)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{ 
+                borderRadius: '8px', 
+                padding: '0 0 24px 0', 
+                borderLeft: hoveredCard === 6 ? '3px solid #0F6E56' : '3px solid #16a34a', 
+                boxShadow: hoveredCard === 6 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+                transform: hoveredCard === 6 ? 'translateY(-8px)' : 'translateY(0)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
+                <Image
+                  src="/Cards/Card 6.jpeg"
+                  alt="Local & Industrial Freight"
+                  width={600}
+                  height={160}
+                  style={{ 
+                    width: '100%', 
+                    height: '160px', 
+                    objectFit: 'cover',
+                    borderRadius: '8px 8px 0 0',
+                    transform: hoveredCard === 6 ? 'scale(1.05)' : 'scale(1)',
+                    transition: 'transform 0.4s ease'
+                  }}
+                />
+              </div>
+              <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
+                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Local & Industrial Freight</h3>
+                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                  Tautliner/curtain-sider services, hot-shot urgent deliveries, and palletised goods across Australia.
+                </p>
+                <div style={{ 
+                  fontFamily: 'Arial, sans-serif', 
+                  fontWeight: 'bold', 
+                  fontSize: '11px', 
+                  letterSpacing: '1px', 
+                  textTransform: 'uppercase', 
+                  color: hoveredCard === 6 ? '#0F6E56' : '#2563EB',
+                  transition: 'color 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  LEARN MORE <span style={{ transform: hoveredCard === 6 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                </div>
               </div>
             </div>
           </div>
@@ -574,7 +853,7 @@ export default function Home() {
 
 
       {/* Key Routes Section */}
-      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
+      <section id="freight-corridors" className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
         <div className="mx-auto max-w-[1200px]">
           {/* Header */}
           <div className="mb-[32px]">
@@ -879,7 +1158,12 @@ export default function Home() {
       </section>
 
       {/* Get In Touch Section */}
-      <section id="contact" className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2e1f 100%)' }}>
+      <section id="contact" className="w-full px-5 py-12 md:py-16 md:px-10" style={{
+        backgroundImage: `linear-gradient(135deg, rgba(10,22,40,0.92) 0%, rgba(13,33,55,0.88) 50%, rgba(10,46,31,0.88) 100%), url('/Logistics.jpeg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
         <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row gap-[48px]">
           {/* Left Column */}
           <div className="w-full md:w-[55%] flex flex-col">
@@ -1020,11 +1304,11 @@ export default function Home() {
           {/* Logo */}
           <div style={{ margin: '0 auto 12px' }}>
             <Image
-              src="/Prime-lane-logo.png"
+              src="/logo-2.png"
               alt="PrimeLane Logistics"
               width={100}
               height={44}
-              style={{ objectFit: 'contain' }}
+              style={{ objectFit: 'contain', width: 'auto' }}
             />
           </div>
 
@@ -1045,7 +1329,7 @@ export default function Home() {
             <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>SERVICES</a>
             <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>ABOUT</a>
             <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>HELP CENTRE</a>
-            <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>CONTACT</a>
+            <Link href="/contact" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>CONTACT</Link>
           </div>
 
           {/* Divider */}
@@ -1062,52 +1346,73 @@ export default function Home() {
       {openServiceModal && (
         <div
           onClick={() => setOpenServiceModal(null)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ background: 'white', borderRadius: '12px', maxWidth: '500px', width: '100%', maxHeight: '85vh', overflowY: 'auto', padding: '32px', position: 'relative' }}
+            style={{ background: 'white', borderRadius: '16px', maxWidth: '560px', width: '100%', maxHeight: '88vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.3)', padding: 0, position: 'relative' }}
           >
             <button
               onClick={() => setOpenServiceModal(null)}
-              style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', fontSize: '20px', color: '#888', cursor: 'pointer' }}
+              className="bg-black/40 hover:bg-black/70 flex items-center justify-center transition-colors"
+              style={{ position: 'absolute', top: '12px', right: '12px', color: 'white', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', border: 'none', cursor: 'pointer', zIndex: 10 }}
             >
               &times;
             </button>
 
             {serviceModals.find(m => m.id === openServiceModal) && (
               <>
-                <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '24px', color: '#0a1628', marginBottom: '8px', paddingRight: '20px' }}>
-                  {serviceModals.find(m => m.id === openServiceModal)?.title}
-                </h2>
-                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#555', marginBottom: '24px', lineHeight: 1.6 }}>
-                  {serviceModals.find(m => m.id === openServiceModal)?.subtitle}
-                </p>
+                <div style={{ height: '200px', width: '100%', position: 'relative', borderRadius: '16px 16px 0 0' }}>
+                  <Image
+                    src={`/Cards/Card ${openServiceModal}.jpeg`}
+                    alt="Service"
+                    width={600}
+                    height={200}
+                    style={{ 
+                      width: '100%', 
+                      height: '200px', 
+                      objectFit: 'cover',
+                      borderRadius: '16px 16px 0 0'
+                    }}
+                  />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.65))', height: '100%', borderRadius: '16px 16px 0 0' }}></div>
+                  <h2 style={{ position: 'absolute', bottom: 0, left: 0, padding: '20px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '22px', color: 'white', lineHeight: 1.2, margin: 0 }}>
+                    {serviceModals.find(m => m.id === openServiceModal)?.title}
+                  </h2>
+                </div>
 
-                {serviceModals.find(m => m.id === openServiceModal)?.sections.map((section, idx) => (
-                  <div key={idx} style={{ marginBottom: '24px' }}>
-                    <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
-                      {section.title}
+                <div style={{ padding: '24px 28px' }}>
+                  <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#666', lineHeight: 1.7, borderBottom: '1px solid #f0f0f0', paddingBottom: '16px', marginBottom: '4px' }}>
+                    {serviceModals.find(m => m.id === openServiceModal)?.subtitle}
+                  </p>
+
+                  {serviceModals.find(m => m.id === openServiceModal)?.sections.map((section, idx) => (
+                    <div key={idx}>
+                      <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', marginBottom: '8px', marginTop: '20px' }}>
+                        {section.title}
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: 0, listStyleType: 'none' }}>
+                        {section.items.map((item, i) => (
+                          <li key={i} style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', lineHeight: 2, display: 'flex' }}>
+                            <span style={{ color: '#0F6E56', fontWeight: 'bold', marginRight: '8px' }}>&bull;</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <ul style={{ margin: 0, paddingLeft: '20px', listStyleType: 'disc' }}>
-                      {section.items.map((item, i) => (
-                        <li key={i} style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#333', lineHeight: 2 }}>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                  ))}
+                </div>
 
-                <div style={{ marginTop: '32px' }}>
+                <div style={{ position: 'sticky', bottom: 0, background: 'white', borderTop: '1px solid #f0f0f0', padding: '16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '0 0 16px 16px' }}>
                   <button
                     onClick={() => window.location.href = "mailto:contact@primelanelogistics.com.au"}
-                    style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', color: 'white', width: '100%', padding: '14px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', letterSpacing: '0.5px', textTransform: 'uppercase', border: 'none', cursor: 'pointer' }}
+                    style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}
                   >
-                    ✉ EMAIL US TO BOOK THIS SERVICE
+                    ✉ EMAIL US TO BOOK
                   </button>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#888', textAlign: 'center', marginTop: '10px' }}>
-                    or call <a href="tel:+61421821220" style={{ color: '#0F6E56', fontWeight: 700, textDecoration: 'none' }}>+61 421 821 220</a>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: '#888', marginRight: '6px' }}>or call</span>
+                    <a href="tel:+61421821220" style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', color: '#0F6E56', textDecoration: 'none' }}>+61 421 821 220</a>
                   </div>
                 </div>
               </>
