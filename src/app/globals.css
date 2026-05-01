@@ -1,31 +1,157 @@
 @import "tailwindcss";
 
+/* ── Design Tokens ─────────────────────────────────────── */
 :root {
-  --color-teal: #3A9A82;
-  --color-teal-dark: #2E7D67;
-  --color-teal-light: #4DB896;
+  /* Palette — single teal accent */
+  --c-bg-light: #F7F5F0;
+  --c-bg-mid: #EEECe7;
+  --c-bg-dark: #0B1220;
+  --c-bg-darkalt: #0f1a2e;
+  --c-surface: #ffffff;
 
-  --color-white: #FFFFFF;
-  --color-off-white: #F7F5F0;
-  --color-text-dark: #2C2C2C;
-  --color-text-mid: #555555;
-  --color-text-light: #FFFFFF;
-  
-  --color-divider: #E0E0E0;
-}
+  --c-teal: #1A7A62;
+  --c-teal-light: #22967A;
+  --c-teal-dim: rgba(26, 122, 98, 0.15);
 
-@theme inline {
-  --color-teal-DEFAULT: var(--color-teal);
-  --color-teal-dark: var(--color-teal-dark);
-  --color-teal-light: var(--color-teal-light);
-  --color-offwhite: var(--color-off-white);
-  
+  --c-ink: #0B1220;
+  --c-ink-mid: #3a4558;
+  --c-ink-soft: #6b7890;
+  --c-divider: rgba(11, 18, 32, 0.08);
+
+  /* Lane Branding */
+  --c-lane-primary: #639922;
+  --c-lane-dark: #3B6D11;
+  --c-lane-accent: #C0DD97;
+  --c-lane-bg: #EAF3DE;
+
+  /* Typography */
   --font-heading: var(--font-raleway);
   --font-body: var(--font-open-sans);
+
+  /* Z-index scale */
+  --z-nav: 100;
+  --z-modal: 200;
+  --z-overlay: 300;
+  --z-grain: 50;
+}
+
+/* ── Tailwind theme bridge ─────────────────────────────── */
+@theme inline {
+  --color-teal-DEFAULT: var(--c-teal);
+  --color-teal-light: var(--c-teal-light);
+  --color-offwhite: var(--c-bg-light);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+/* ── Base ──────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-off-white);
-  color: var(--color-text-dark);
+  background: var(--c-bg-light);
+  color: var(--c-ink);
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Grain overlay ─────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Scroll reveal ─────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.75s cubic-bezier(0.32, 0.72, 0, 1),
+    transform 0.75s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-d1 {
+  transition-delay: 80ms;
+}
+
+.reveal-d2 {
+  transition-delay: 160ms;
+}
+
+.reveal-d3 {
+  transition-delay: 240ms;
+}
+
+.reveal-d4 {
+  transition-delay: 320ms;
+}
+
+.reveal-d5 {
+  transition-delay: 400ms;
+}
+
+.reveal-d6 {
+  transition-delay: 480ms;
+}
+
+/* ── Tabular numbers ───────────────────────────────────── */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Spotlight card border (mouse-driven) ──────────────── */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(26, 122, 98, 0.07), transparent 70%);
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Focus ring ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--c-teal);
+  outline-offset: 3px;
+}
+
+/* ── Skip link ──────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 999;
+  padding: 8px 16px;
+  background: var(--c-teal);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  border-radius: 0 0 6px 0;
+}
+
+.skip-link:focus {
+  left: 0;
 }

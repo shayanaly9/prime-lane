@@ -5,7 +5,27 @@ import { DefaultChatTransport, isTextUIPart, UIMessage } from 'ai';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
 const WELCOME_TEXT =
-  "Hi! I'm PrimeLane's freight assistant. I can help with questions about our road freight, warehousing, logistics services, shipment tracking, or general freight advice. How can I help you today?";
+  "Hi! I'm Lane, your PrimeLane assistant. I can help with road freight, warehousing, logistics services, or shipment tracking. How can I help you today?";
+
+const LaneIcon = ({ size = 24 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 2L20.66 7V17L12 22L3.34 17V7L12 2Z"
+      fill="#639922"
+    />
+    <rect x="6" y="14" width="1.5" height="4" rx="0.75" fill="#C0DD97" />
+    <rect x="9" y="11" width="1.5" height="7" rx="0.75" fill="#C0DD97" />
+    <rect x="12" y="8" width="1.5" height="10" rx="0.75" fill="#C0DD97" />
+    <rect x="15" y="6" width="1.5" height="12" rx="0.75" fill="#C0DD97" />
+    <rect x="18" y="9" width="1.5" height="9" rx="0.75" fill="#C0DD97" />
+  </svg>
+);
 
 function makeWelcome(): UIMessage {
   return {
@@ -67,73 +87,91 @@ export default function ChatWidget() {
       {open && (
         <div
           id="chatbot-window"
-          className="mb-4 w-[360px] flex flex-col"
+          className="mb-5 w-[calc(100vw-32px)] sm:w-[380px] flex flex-col transition-all duration-300 ease-out"
           style={{
-            height: '520px',
-            background: '#fff',
-            border: '1px solid #E0E0E0',
-            boxShadow: '0 8px 32px rgba(58,154,130,0.12)',
+            height: 'min(640px, calc(100vh - 120px))',
+            background: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            border: '1px solid rgba(99, 153, 34, 0.15)',
+            boxShadow: '0 32px 80px -16px rgba(59, 109, 17, 0.15)',
+            borderRadius: '28px',
+            overflow: 'hidden',
+            transformOrigin: 'bottom right',
+            animation: 'chat-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
           }}
         >
           {/* Header */}
           <div
-            style={{ background: '#3A9A82' }}
-            className="flex items-center justify-between px-5 py-4 flex-shrink-0"
+            className="flex items-center justify-between px-6 py-5 flex-shrink-0"
+            style={{ 
+              background: '#ffffff',
+              borderBottom: '1px solid rgba(99, 153, 34, 0.1)'
+            }}
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <span style={{ fontSize: '16px' }}>🚛</span>
+              <div className="relative">
+                <div className="w-11 h-11 rounded-2xl bg-[#EAF3DE] flex items-center justify-center border border-[#639922]/10 shadow-sm">
+                  <LaneIcon size={40} />
+                </div>
+                <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></span>
               </div>
               <div>
-                <p className="font-heading text-white text-[0.85rem] font-semibold uppercase tracking-[0.06em]">
-                  PrimeLane Assistant
+                <p className="font-heading text-[#1a1a1a] text-[1.05rem] font-bold tracking-tight">
+                  Lane
                 </p>
-                <p className="font-body text-white/70 text-[0.7rem]">Freight &amp; Logistics Support</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="font-body text-[#555555] text-[0.65rem] uppercase tracking-[0.2em] font-bold">by PrimeLane</p>
+                </div>
               </div>
             </div>
             <button
               id="chatbot-close"
               onClick={() => setOpen(false)}
-              className="text-white/70 hover:text-white transition-colors text-xl leading-none"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/[0.03] text-[#1a1a1a]/60 hover:text-[#1a1a1a] hover:bg-black/[0.06] transition-all active:scale-90"
               aria-label="Close chat"
             >
-              ×
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
             </button>
           </div>
 
           {/* Messages */}
           <div
-            className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3"
+            className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6"
             style={{ background: '#F7F5F0' }}
           >
-            {messages.map((m) => {
+            {messages.map((m, idx) => {
               const text = getMessageText(m);
               if (!text) return null;
+              const isUser = m.role === 'user';
               return (
                 <div
                   key={m.id}
-                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-message-in`}
+                  style={{ animationDelay: `${idx * 0.05}s` }}
                 >
-                  {m.role === 'assistant' && (
-                    <div
-                      className="w-6 h-6 rounded-full flex-shrink-0 mr-2 mt-1 flex items-center justify-center"
-                      style={{ background: '#3A9A82', fontSize: '11px' }}
-                    >
-                      🚛
+                  {!isUser && (
+                    <div className="w-7 h-7 rounded-xl bg-white flex-shrink-0 mr-3 mt-1 flex items-center justify-center border border-black/5 shadow-sm">
+                       <LaneIcon size={16} />
                     </div>
                   )}
                   <div
-                    className="max-w-[80%]"
+                    className="max-w-[85%]"
                     style={{
-                      background: m.role === 'user' ? '#3A9A82' : '#fff',
-                      color: m.role === 'user' ? '#fff' : '#2C2C2C',
-                      padding: '10px 14px',
-                      borderRadius:
-                        m.role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                      fontFamily: "'Open Sans', sans-serif",
-                      fontSize: '0.82rem',
-                      lineHeight: '1.65',
-                      border: m.role === 'assistant' ? '1px solid #E0E0E0' : 'none',
+                      background: isUser ? '#639922' : '#ffffff',
+                      color: isUser ? '#ffffff' : '#1a1a1a',
+                      padding: '14px 18px',
+                      borderRadius: isUser ? '24px 24px 4px 24px' : '24px 24px 24px 4px',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.9rem',
+                      lineHeight: '1.6',
+                      boxShadow: isUser 
+                        ? '0 8px 20px -4px rgba(99, 153, 34, 0.3)' 
+                        : '0 4px 12px rgba(0,0,0,0.03)',
+                      border: isUser ? 'none' : '1px solid rgba(0,0,0,0.05)',
                     }}
                   >
                     {text}
@@ -144,28 +182,27 @@ export default function ChatWidget() {
 
             {isLoading && (
               <div className="flex justify-start">
-                <div
-                  className="w-6 h-6 rounded-full flex-shrink-0 mr-2 mt-1 flex items-center justify-center"
-                  style={{ background: '#3A9A82', fontSize: '11px' }}
-                >
-                  🚛
+                <div className="w-7 h-7 rounded-xl bg-white flex-shrink-0 mr-3 mt-1 flex items-center justify-center border border-black/5 shadow-sm">
+                   <LaneIcon size={16} />
                 </div>
                 <div
                   style={{
-                    background: '#fff',
-                    border: '1px solid #E0E0E0',
-                    padding: '10px 14px',
-                    borderRadius: '18px 18px 18px 4px',
+                    background: '#ffffff',
+                    border: '1px solid rgba(0,0,0,0.05)',
+                    padding: '14px 20px',
+                    borderRadius: '24px 24px 24px 4px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
                   }}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-2"
                 >
                   {[0, 1, 2].map((i) => (
                     <span
                       key={i}
                       className="w-2 h-2 rounded-full inline-block"
                       style={{
-                        background: '#3A9A82',
-                        animation: `chatbounce 1.2s ease-in-out ${i * 0.2}s infinite`,
+                        background: '#639922',
+                        opacity: 0.5,
+                        animation: `chat-dot-bounce 1.4s infinite ease-in-out ${i * 0.2}s`,
                       }}
                     />
                   ))}
@@ -174,57 +211,49 @@ export default function ChatWidget() {
             )}
 
             {error && (
-              <p className="text-center text-[0.75rem] text-red-400 font-body">
-                Connection error. Please try again.
-              </p>
+              <div className="mx-auto px-5 py-2.5 rounded-full bg-red-50 border border-red-100 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                <p className="text-[0.8rem] text-red-600 font-body font-semibold">
+                  Connection failed. Please retry.
+                </p>
+              </div>
             )}
 
             <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
-          <div className="flex items-center gap-2 px-4 py-3 border-t border-[#E0E0E0] flex-shrink-0 bg-white">
-            <input
-              id="chatbot-input"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about freight, tracking, services..."
-              className="flex-1 font-body text-[0.82rem] text-[#2C2C2C] outline-none placeholder:text-[#bbb] bg-transparent"
-              disabled={isLoading}
-              autoComplete="off"
-            />
-            <button
-              id="chatbot-send"
-              type="button"
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-opacity disabled:opacity-40"
-              style={{ background: '#3A9A82' }}
-              aria-label="Send message"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M22 2L11 13"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22 2L15 22L11 13L2 9L22 2Z"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Powered by */}
-          <div className="text-center py-1 bg-white border-t border-[#E0E0E0]">
-            <p className="font-body text-[#bbb] text-[0.65rem]">Powered by Gemini 2.5 Flash</p>
+          <div className="px-6 py-5 flex-shrink-0 bg-white/40 backdrop-blur-md border-t border-black/[0.03]">
+            <div className="flex items-center gap-2 p-2 pl-5 bg-white border border-black/5 rounded-[22px] focus-within:border-lane-primary/30 transition-all shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+              <input
+                id="chatbot-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask Lane..."
+                className="flex-1 font-body text-[0.95rem] text-var(--c-ink) outline-none placeholder:text-gray-400 bg-transparent"
+                disabled={isLoading}
+                autoComplete="off"
+              />
+              <button
+                id="chatbot-send"
+                type="button"
+                onClick={handleSend}
+                disabled={isLoading || !input.trim()}
+                className="flex-shrink-0 w-10 h-10 rounded-[18px] flex items-center justify-center transition-all disabled:opacity-20 enabled:hover:bg-lane-bg enabled:active:scale-90 text-lane-primary"
+                aria-label="Send message"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+            <div className="mt-3 text-center">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/[0.02] border border-black/[0.03]">
+                <p className="font-body text-gray-400 text-[0.55rem] uppercase tracking-[0.25em] font-black">Lane by PrimeLane</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -233,31 +262,44 @@ export default function ChatWidget() {
       <button
         id="chatbot-toggle"
         onClick={() => setOpen((o) => !o)}
-        aria-label="Open freight assistant chat"
-        className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95"
-        style={{ background: '#3A9A82' }}
+        aria-label="Open assistant"
+        className="group w-16 h-16 rounded-[22px] flex items-center justify-center shadow-2xl transition-all duration-400 hover:scale-110 active:scale-90 overflow-hidden"
+        style={{ 
+          background: 'linear-gradient(135deg, var(--c-lane-dark), var(--c-lane-primary))',
+          boxShadow: '0 20px 40px -10px rgba(99, 153, 34, 0.4)'
+        }}
       >
         {open ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="animate-in fade-in zoom-in duration-300">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         ) : (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <div className="relative flex items-center justify-center">
+            <div className="group-hover:scale-110 transition-transform duration-300">
+               <LaneIcon size={32} />
+            </div>
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full animate-ping opacity-20"></span>
+          </div>
         )}
       </button>
 
-      <style>{`
-        @keyframes chatbounce {
+      <style jsx>{`
+        @keyframes chat-dot-bounce {
           0%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-6px); }
+          40% { transform: translateY(-4px); }
+        }
+        @keyframes chat-fade-in {
+          from { opacity: 0; transform: translateY(20px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes message-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-message-in {
+          animation: message-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          opacity: 0;
         }
       `}</style>
     </div>

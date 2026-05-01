@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const serviceModals = [
   {
@@ -89,19 +90,25 @@ const serviceModals = [
     subtitle: "Professional car carrier services across Australia — from everyday vehicles to prestige and non-runners.",
     sections: [
       {
-        title: "SERVICES INCLUDE",
+        title: "CARRIER OPTIONS",
         items: [
-          "Open Carrier — cost-effective transport for standard vehicles",
-          "Enclosed Carrier — weather-protected transport for prestige, classic, or high-value vehicles",
-          "Non-Runner / Salvage — winch-equipped trucks for vehicles that do not start",
-          "Auction & Dealership Pickups — Manheim, Pickles, and other auction houses across Melbourne and major cities",
-          "Interstate Last-Mile Delivery — receiving vehicles from interstate carriers and completing local delivery"
+          "Open Carrier — cost-effective transport for standard vehicles, SUVs, and everyday cars",
+          "Enclosed Carrier — weather-protected transport for prestige, classic, or high-value vehicles, protection from weather and road debris"
+        ]
+      },
+      {
+        title: "SPECIALIST SERVICES",
+        items: [
+          "Auction & Dealership Pickups — Specialized collection from Manheim, Pickles, and other major auctions, delivered to dealerships or private homes",
+          "Non-Runner / Salvage Transport — winch-equipped trucks for vehicles that do not start",
+          "Interstate Last-Mile Delivery — receiving vehicles arriving from other states and completing local delivery"
         ]
       },
       {
         title: "OUR COMMITMENT",
         items: [
-          "Condition reports with photos taken before and after every vehicle movement",
+          "Full condition report with photos taken before and after every vehicle movement",
+          "We document the car's state so you have complete peace of mind",
           "Full insurance coverage during transit"
         ]
       }
@@ -113,19 +120,21 @@ const serviceModals = [
     subtitle: "Reliable port cartage services from the Port of Melbourne and surrounding wharves.",
     sections: [
       {
-        title: "SERVICES INCLUDE",
+        title: "EQUIPMENT & SERVICES",
         items: [
           "Side-Loader — ground-level container delivery at sites without a loading dock",
-          "Skeletal Trailer — fast wharf-to-warehouse drop-and-swap operations",
-          "Overweight / Oversize — high-mass transport with applicable permits",
-          "Reefer Services — power-plugged transport for temperature-controlled cargo",
+          "Standard Skeletal Trailers — fast wharf-to-warehouse drop-and-swap operations",
+          "Overweight / Oversize — high-mass transport for heavy machinery or industrial parts, with applicable permits",
+          "Reefer Services — power-plugged transport for temperature-controlled chemicals and cargo",
           "Container De-hiring — empty container returns to designated depots"
         ]
       },
       {
         title: "COVERAGE",
         items: [
-          "Port of Melbourne, Tarneit, Broadmeadows, Western Suburbs, and greater Melbourne"
+          "Port of Melbourne (primary)",
+          "Tarneit, Broadmeadows, Western Suburbs",
+          "Greater Melbourne and surrounding regions"
         ]
       }
     ]
@@ -133,15 +142,24 @@ const serviceModals = [
   {
     id: 6,
     title: "Local & Industrial Freight",
-    subtitle: "Domestic freight solutions for automotive parts, chemical drums, palletised goods, and more.",
+    subtitle: "Specialist local freight for automotive parts, chemical drums, palletised goods, and more.",
     sections: [
       {
-        title: "SERVICES INCLUDE",
+        title: "SERVICE OPTIONS",
         items: [
-          "Tautliner / Curtain-Sider — side-loading for pallets, automotive parts, and chemical drums",
-          "Hot-Shot / Same-Day — premium urgent delivery for critical components",
-          "DG-Placarded Transport — licensed for Dangerous Goods Classes 2–9 nationally",
+          "Tautliner / Curtain-Sider — side-loading for pallets, automotive parts, and chemical drums needing weather protection",
+          "Hot-Shot / Same-Day — premium urgent delivery for critical automotive components or chemical supplies",
+          "DG-Placarded Transport — fully licensed to carry Dangerous Goods Classes 2 through 9 nationally",
           "Automotive Parts Freight — specialist handling for dealership and warehouse supply chains"
+        ]
+      },
+      {
+        title: "INDUSTRIES SERVED",
+        items: [
+          "Automotive parts and components",
+          "Chemical and industrial supplies",
+          "Retail and FMCG distribution",
+          "Manufacturing and construction materials"
         ]
       }
     ]
@@ -149,22 +167,29 @@ const serviceModals = [
 ];
 
 export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+function HomeContent() {
   const [hoveredButton, setHoveredButton] = useState<number | null>(null);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openServiceModal, setOpenServiceModal] = useState<number | null>(null);
-  const navRef = useRef<HTMLElement>(null);
+  
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null);
-      }
+    const serviceId = searchParams.get('service');
+    if (serviceId) {
+      setOpenServiceModal(parseInt(serviceId));
+      // Optionally clear the param after opening
+      // router.replace('/', { scroll: false });
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -178,307 +203,157 @@ export default function Home() {
 
   return (
     <main className="w-full flex flex-col items-center">
-      <nav ref={navRef} className="w-full bg-white z-50 sticky top-0 px-4 md:px-10 flex justify-between items-center gap-4" style={{ borderBottom: '1px solid #e8ede9', height: '64px' }}>
-        {/* Left Side */}
-        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-          <Image
-            src="/Prime-lane-logo.png"
-            alt="PrimeLane Logistics"
-            width={110}
-            height={36}
-            style={{ objectFit: 'contain', width: 'auto' }}
-            priority
-          />
-        </div>
-
-        {/* Right Side */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Services Dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setOpenDropdown(openDropdown === 'services' ? null : 'services')}
-              style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#333', padding: '8px 14px', cursor: 'pointer', borderRadius: '4px', background: 'none', border: 'none' }}
-              className="hover:bg-[#f0f4f8]"
-            >
-              SERVICES ▾
-            </button>
-            {openDropdown === 'services' && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '240px', zIndex: 100, padding: '8px 0', marginTop: '4px' }}>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#999', padding: '8px 16px 4px', fontWeight: 700 }}>
-                  INTERNATIONAL
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  🌐 Australia &rarr; Dubai (Primary Route)
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  🚢 International Sea Freight
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  ✈️ International Air Freight
-                </div>
-
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#999', padding: '16px 16px 4px', fontWeight: 700 }}>
-                  NATIONAL (AUSTRALIA)
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  🚗 Vehicle &amp; Automotive Transport
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  ⚓ Wharf &amp; Container Cartage
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  📦 Local &amp; Industrial Freight
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  ⚠️ Dangerous Goods (DG) Transport
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* About Dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setOpenDropdown(openDropdown === 'about' ? null : 'about')}
-              style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#333', padding: '8px 14px', cursor: 'pointer', borderRadius: '4px', background: 'none', border: 'none' }}
-              className="hover:bg-[#f0f4f8]"
-            >
-              ABOUT ▾
-            </button>
-            {openDropdown === 'about' && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '240px', zIndex: 100, padding: '8px 0', marginTop: '4px' }}>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  📋 Our Story
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  ✅ Why Choose PrimeLane
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  🏆 Certifications &amp; Accreditations
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Help Centre Dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setOpenDropdown(openDropdown === 'help' ? null : 'help')}
-              style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', color: '#333', padding: '8px 14px', cursor: 'pointer', borderRadius: '4px', background: 'none', border: 'none' }}
-              className="hover:bg-[#f0f4f8]"
-            >
-              HELP CENTRE ▾
-            </button>
-            {openDropdown === 'help' && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '240px', zIndex: 100, padding: '8px 0', marginTop: '4px' }}>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  ❓ Frequently Asked Questions
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  📞 Contact &amp; Enquiries
-                </div>
-                <div className="hover:bg-[#f0f4f8] hover:text-[#0F6E56]" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
-                  🗺️ Shipping Routes &amp; Transit Times
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* CTA Button */}
-          <Link 
-            href="/contact"
-            style={{ background: 'linear-gradient(to right, #0F6E56, #2563EB)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '4px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', letterSpacing: '0.5px', textTransform: 'uppercase', cursor: 'pointer', marginLeft: '8px', textDecoration: 'none', display: 'inline-block' }}>
-            GET IN TOUCH
-          </Link>
-        </div>
-      </nav>
+      <a href="#main-content" className="skip-link">Skip to content</a>
+      {/* NAVBAR removed, handled by layout.tsx */}
 
       <section
-        className="w-full min-h-screen flex flex-col items-center justify-center text-center px-5 md:px-10"
+        id="main-content"
+        className="w-full"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10,22,40,0.85) 0%, rgba(13,33,55,0.80) 50%, rgba(10,46,31,0.80) 100%), url('/Hero-Banner.jpeg')`,
+          backgroundImage: `linear-gradient(to right, rgba(11,18,32,0.97) 0%, rgba(11,18,32,0.88) 55%, rgba(11,18,32,0.45) 100%), url('/Hero-Banner.jpeg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          minHeight: '100dvh',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
-        {/* Logo */}
-        <Image 
-          src="/logo-2.png"
-          alt="PrimeLane Logistics"
-          width={160}
-          height={80}
-          style={{ objectFit: 'contain', marginBottom: '12px', width: 'auto' }}
-          priority
-        />
-        <p className="mb-[24px]" style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>
-          STREAMLINING EVERY MILE
-        </p>
-
-        {/* Badge / Pill */}
-        <div className="mb-[32px] inline-block" style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '999px', padding: '8px 20px', fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'white' }}>
-          AUSTRALIA&apos;S TRUSTED FREIGHT PARTNER
-        </div>
-
-        {/* Main Heading */}
-        <h1 className="mb-[24px] text-4xl sm:text-5xl md:text-[64px] font-bold leading-[1.1]" style={{ fontFamily: 'Arial, sans-serif' }}>
-          <div style={{ color: 'white' }}>Moving Cargo From</div>
-          <div>
-            <span style={{ color: '#4A9EFF' }}>Australia</span>
-            <span style={{ color: 'white' }}> to the </span>
-            <span style={{ color: '#4AE89A' }}>World</span>
+        <div className="mx-auto max-w-[1200px] px-6 md:px-10 w-full py-28 md:py-36">
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '32px' }}>
+            Australia&apos;s freight partner
           </div>
-        </h1>
-
-        {/* Paragraph */}
-        <p className="mx-auto mb-[40px]" style={{ fontFamily: 'Arial, sans-serif', fontSize: '16px', color: 'rgba(255, 255, 255, 0.75)', maxWidth: '560px', lineHeight: '1.8' }}>
-          PrimeLane Logistics specialises in container shipping, vehicle transport, and industrial freight — with our primary corridor running from Australia direct to Dubai, UAE.
-        </p>
-
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button 
-            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-            onMouseEnter={() => setHoveredButton(1)}
-            onMouseLeave={() => setHoveredButton(null)}
-            style={{ 
-              background: hoveredButton === 1 ? '#0a4f3e' : '#0F6E56', 
-              color: 'white', 
-              border: 'none', 
-              padding: '16px 36px', 
-              borderRadius: '6px', 
-              fontFamily: 'Arial, sans-serif', 
-              fontWeight: 'bold', 
-              fontSize: '13px', 
-              letterSpacing: '1px', 
-              textTransform: 'uppercase', 
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-              transform: hoveredButton === 1 ? 'translateY(-2px)' : 'translateY(0)',
-              boxShadow: hoveredButton === 1 ? '0 8px 24px rgba(15,110,86,0.4)' : 'none'
-            }}
-          >
-            REQUEST A QUOTE
-          </button>
-          <button 
-            onClick={() => document.getElementById('freight-corridors')?.scrollIntoView({ behavior: 'smooth' })}
-            onMouseEnter={() => setHoveredButton(2)}
-            onMouseLeave={() => setHoveredButton(null)}
-            style={{ 
-              background: hoveredButton === 2 ? 'rgba(255,255,255,0.1)' : 'transparent', 
-              color: 'white', 
-              border: hoveredButton === 2 ? '1.5px solid rgba(255,255,255,0.9)' : '1.5px solid rgba(255,255,255,0.5)', 
-              padding: '16px 36px', 
-              borderRadius: '6px', 
-              fontFamily: 'Arial, sans-serif', 
-              fontWeight: 'bold', 
-              fontSize: '13px', 
-              letterSpacing: '1px', 
-              textTransform: 'uppercase', 
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-              transform: hoveredButton === 2 ? 'translateY(-2px)' : 'translateY(0)',
-              boxShadow: hoveredButton === 2 ? '0 8px 24px rgba(255,255,255,0.1)' : 'none'
-            }}
-          >
-            AUSTRALIA &rarr; DUBAI ROUTE
-          </button>
-        </div>
-      </section>
-
-      {/* BAR 1 — Stats Bar */}
-      <section
-        className="w-full flex justify-center text-center px-4 py-8 md:px-10"
-        style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a2e1f 100%)' }}
-      >
-        <div className="flex flex-row justify-between items-center w-full max-w-[1000px] gap-4 overflow-x-auto overflow-y-hidden" style={{ scrollbarWidth: 'none' }}>
-          {/* Item 1 */}
-          <div className="flex flex-col items-center flex-1 shrink-0">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '22px', color: '#4A9EFF', marginBottom: '4px' }}>AU &rarr; UAE</div>
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>PRIMARY ROUTE</div>
-          </div>
-
-          <div style={{ width: '1px', height: '40px', background: 'rgba(255, 255, 255, 0.1)' }} className="shrink-0"></div>
-
-          {/* Item 2 */}
-          <div className="flex flex-col items-center flex-1 shrink-0">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '22px', color: '#4AE89A', marginBottom: '4px' }}>FCL & LCL</div>
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>CONTAINER OPTIONS</div>
-          </div>
-
-          <div style={{ width: '1px', height: '40px', background: 'rgba(255, 255, 255, 0.1)' }} className="shrink-0"></div>
-
-          {/* Item 3 */}
-          <div className="flex flex-col items-center flex-1 shrink-0">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '22px', color: '#4A9EFF', marginBottom: '4px' }}>DG Certified</div>
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>CLASS 2&ndash;9</div>
-          </div>
-
-          <div style={{ width: '1px', height: '40px', background: 'rgba(255, 255, 255, 0.1)' }} className="shrink-0"></div>
-
-          {/* Item 4 */}
-          <div className="flex flex-col items-center flex-1 shrink-0">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '22px', color: '#4AE89A', marginBottom: '4px' }}>Door-to-Door</div>
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)' }}>FULL SERVICE</div>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(32px, 7vw, 86px)', lineHeight: 1.0, letterSpacing: '-0.03em', color: 'white', marginBottom: '28px', maxWidth: '820px', textWrap: 'balance' as React.CSSProperties['textWrap'] }}>
+            Moving cargo from{' '}
+            <span style={{ color: 'var(--c-teal-light)' }}>Australia</span>
+            {' '}to the world
+          </h1>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '17px', color: 'rgba(255,255,255,0.6)', maxWidth: '520px', lineHeight: 1.8, marginBottom: '44px' }}>
+            Container shipping, vehicle transport, and industrial freight — direct from Australia to Dubai and beyond.
+          </p>
+          <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+            <Link href="/help-centre/contact" style={{ textDecoration: 'none' }}>
+              <button
+                onMouseEnter={() => setHoveredButton(1)}
+                onMouseLeave={() => setHoveredButton(null)}
+                style={{
+                  background: hoveredButton === 1 ? 'var(--c-teal-light)' : 'var(--c-teal)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '15px 34px',
+                  borderRadius: '999px',
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s cubic-bezier(0.32,0.72,0,1)',
+                  transform: hoveredButton === 1 ? 'translateY(-2px)' : 'translateY(0)',
+                  boxShadow: hoveredButton === 1 ? '0 12px 32px rgba(26,122,98,0.4)' : 'none',
+                  letterSpacing: '0.01em',
+                  width: '100%'
+                }}
+                className="w-full sm:w-auto"
+              >
+                Request a quote
+              </button>
+            </Link>
+            <button
+              onClick={() => document.getElementById('freight-corridors')?.scrollIntoView({ behavior: 'smooth' })}
+              onMouseEnter={() => setHoveredButton(2)}
+              onMouseLeave={() => setHoveredButton(null)}
+              style={{
+                background: hoveredButton === 2 ? 'rgba(255,255,255,0.07)' : 'transparent',
+                color: 'white',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                padding: '15px 34px',
+                borderRadius: '999px',
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 600,
+                fontSize: '14px',
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.32,0.72,0,1)',
+                transform: hoveredButton === 2 ? 'translateY(-2px)' : 'translateY(0)',
+                letterSpacing: '0.01em',
+              }}
+            >
+              Australia → Dubai route
+            </button>
           </div>
         </div>
       </section>
 
-      {/* BAR 2 — Route Bar */}
-      <section
-        className="w-full flex justify-center text-center overflow-x-auto px-4 py-3 md:px-10"
-        style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', scrollbarWidth: 'none' }}
-      >
-        <div className="flex flex-row items-center justify-center w-full min-w-max">
-          <div style={{ background: 'rgba(0, 0, 0, 0.2)', borderRadius: '999px', padding: '4px 14px', fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'white', whiteSpace: 'nowrap' }}>
-            <span style={{ opacity: 0.7 }}>AU</span> Melbourne / Sydney / Brisbane
+      {/* Stats Bar */}
+      <section className="w-full flex justify-center text-center px-4 py-10 md:px-10" style={{ background: 'var(--c-bg-dark)' }}>
+        <div className="flex flex-row justify-between items-center w-full max-w-[1000px] gap-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          <div className="flex flex-col items-center flex-1 shrink-0">
+            <div className="tabular" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'var(--c-teal-light)', marginBottom: '4px' }}>AU → UAE</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Primary route</div>
           </div>
-
-          <span style={{ color: 'white', opacity: 0.6, margin: '0 16px', whiteSpace: 'nowrap' }}>&rarr;&rarr;&rarr;</span>
-
-          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'white', fontWeight: 500, whiteSpace: 'nowrap' }}>
-            Port of Melbourne &middot; Jebel Ali Port &middot; Dubai
+          <div style={{ width: '1px', height: '36px', background: 'rgba(255,255,255,0.08)' }} className="shrink-0" />
+          <div className="flex flex-col items-center flex-1 shrink-0">
+            <div className="tabular" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'var(--c-teal-light)', marginBottom: '4px' }}>FCL & LCL</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Container options</div>
           </div>
+          <div style={{ width: '1px', height: '36px', background: 'rgba(255,255,255,0.08)' }} className="shrink-0" />
+          <div className="flex flex-col items-center flex-1 shrink-0">
+            <div className="tabular" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'var(--c-teal-light)', marginBottom: '4px' }}>DG Certified</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Classes 2–9</div>
+          </div>
+          <div style={{ width: '1px', height: '36px', background: 'rgba(255,255,255,0.08)' }} className="shrink-0" />
+          <div className="flex flex-col items-center flex-1 shrink-0">
+            <div className="tabular" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'var(--c-teal-light)', marginBottom: '4px' }}>Door-to-door</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Full service</div>
+          </div>
+        </div>
+      </section>
 
-          <span style={{ color: 'white', opacity: 0.6, margin: '0 16px', whiteSpace: 'nowrap' }}>&rarr;&rarr;&rarr;</span>
 
-          <div style={{ background: 'rgba(0, 0, 0, 0.2)', borderRadius: '999px', padding: '4px 14px', fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'white', whiteSpace: 'nowrap' }}>
-            <span style={{ opacity: 0.7 }}>AE</span> Dubai, UAE
+
+
+
+      {/* Route strip */}
+      <section className="w-full flex justify-center overflow-x-auto px-4 py-4 md:px-10" style={{ background: 'var(--c-bg-darkalt)', scrollbarWidth: 'none' }}>
+        <div className="flex flex-row items-center justify-center gap-3 min-w-max">
+          <div style={{ background: 'rgba(26,122,98,0.18)', borderRadius: '6px', padding: '4px 12px', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap' }}>
+            <span style={{ color: 'rgba(255,255,255,0.35)', marginRight: '6px' }}>AU</span>Melbourne · Sydney · Brisbane
+          </div>
+          <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+            {[0, 1, 2].map(i => <div key={i} style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--c-teal-light)', opacity: 0.5 + i * 0.2 }} />)}
+          </div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>Port of Melbourne · Jebel Ali Port · Dubai</div>
+          <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+            {[0, 1, 2].map(i => <div key={i} style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--c-teal-light)', opacity: 0.5 + i * 0.2 }} />)}
+          </div>
+          <div style={{ background: 'rgba(26,122,98,0.18)', borderRadius: '6px', padding: '4px 12px', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap' }}>
+            <span style={{ color: 'rgba(255,255,255,0.35)', marginRight: '6px' }}>AE</span>Dubai, UAE
           </div>
         </div>
       </section>
 
       {/* Services Section */}
-      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
+      <section id="services" className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
         <div className="mx-auto max-w-[1200px]">
           {/* Header */}
-          <div className="mb-[40px]">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
-              WHAT WE DO
-            </div>
-            <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '36px', color: '#0a1628', marginBottom: '12px' }}>
-              Our Services
-            </h2>
-            <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.8, maxWidth: '540px' }}>
-              Click any service to learn more. To book, simply contact us by email or phone — every shipment is handled personally.
-            </p>
+          <div className="mb-[48px]">
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '10px' }}>What we do</div>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(28px, 3.5vw, 40px)', color: 'var(--c-ink)', marginBottom: '14px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>Our services</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink-mid)', lineHeight: 1.8, maxWidth: '540px' }}>Select any service to learn more. Every shipment is quoted and handled personally — no online booking portals.</p>
           </div>
 
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20px]">
             {/* Card 1 */}
-            <div 
-              className="flex flex-col bg-white overflow-hidden" 
+            <div
+              className="flex flex-col bg-white overflow-hidden"
               onClick={() => setOpenServiceModal(1)}
               onMouseEnter={() => setHoveredCard(1)}
               onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                borderRadius: '8px', 
-                padding: '0 0 24px 0', 
-                borderLeft: hoveredCard === 1 ? '3px solid #0F6E56' : '3px solid #2563EB', 
-                boxShadow: hoveredCard === 1 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transform: hoveredCard === 1 ? 'translateY(-8px)' : 'translateY(0)',
-                transition: 'all 0.3s ease',
+              style={{
+                borderRadius: '10px',
+                padding: '0 0 24px 0',
+                borderLeft: hoveredCard ? '3px solid var(--c-teal)' : '3px solid transparent',
+                boxShadow: hoveredCard ? '0 20px 48px rgba(26,122,98,0.12)' : '0 2px 8px rgba(11,18,32,0.06)',
+                transform: hoveredCard ? 'translateY(-6px)' : 'translateY(0)',
+                transition: 'all 0.3s cubic-bezier(0.32,0.72,0,1)',
                 cursor: 'pointer'
               }}
             >
@@ -488,9 +363,9 @@ export default function Home() {
                   alt="Australia to Dubai"
                   width={600}
                   height={160}
-                  style={{ 
-                    width: '100%', 
-                    height: '160px', 
+                  style={{
+                    width: '100%',
+                    height: '160px',
                     objectFit: 'cover',
                     borderRadius: '8px 8px 0 0',
                     transform: hoveredCard === 1 ? 'scale(1.05)' : 'scale(1)',
@@ -499,39 +374,29 @@ export default function Home() {
                 />
               </div>
               <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Australia &rarr; Dubai (Primary Route)</h3>
-                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'var(--c-ink)', marginBottom: '10px' }}>Australia &rarr; Dubai (Primary Route)</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', lineHeight: 1.7, marginBottom: '20px' }} className="flex-1">
                   FCL and LCL container shipping from all major Australian ports direct to Jebel Ali, Dubai.
                 </p>
-                <div style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  letterSpacing: '1px', 
-                  textTransform: 'uppercase', 
-                  color: hoveredCard === 1 ? '#0F6E56' : '#2563EB',
-                  transition: 'color 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  LEARN MORE <span style={{ transform: hoveredCard === 1 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '12px', color: hoveredCard === 1 ? 'var(--c-teal)' : 'var(--c-ink-soft)', transition: 'color 0.25s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Learn more <span style={{ transform: hoveredCard === 1 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s', display: 'inline-block' }}>→</span>
                 </div>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div 
-              className="flex flex-col bg-white overflow-hidden" 
+            <div
+              className="flex flex-col bg-white overflow-hidden"
               onClick={() => setOpenServiceModal(2)}
               onMouseEnter={() => setHoveredCard(2)}
               onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                borderRadius: '8px', 
-                padding: '0 0 24px 0', 
-                borderLeft: hoveredCard === 2 ? '3px solid #0F6E56' : '3px solid #16a34a', 
-                boxShadow: hoveredCard === 2 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transform: hoveredCard === 2 ? 'translateY(-8px)' : 'translateY(0)',
-                transition: 'all 0.3s ease',
+              style={{
+                borderRadius: '10px',
+                padding: '0 0 24px 0',
+                borderLeft: hoveredCard === 2 ? '3px solid var(--c-teal)' : '3px solid transparent',
+                boxShadow: hoveredCard === 2 ? '0 20px 48px rgba(26,122,98,0.12)' : '0 2px 8px rgba(11,18,32,0.06)',
+                transform: hoveredCard === 2 ? 'translateY(-6px)' : 'translateY(0)',
+                transition: 'all 0.3s cubic-bezier(0.32,0.72,0,1)',
                 cursor: 'pointer'
               }}
             >
@@ -541,9 +406,9 @@ export default function Home() {
                   alt="International Sea Freight"
                   width={600}
                   height={160}
-                  style={{ 
-                    width: '100%', 
-                    height: '160px', 
+                  style={{
+                    width: '100%',
+                    height: '160px',
                     objectFit: 'cover',
                     borderRadius: '8px 8px 0 0',
                     transform: hoveredCard === 2 ? 'scale(1.05)' : 'scale(1)',
@@ -552,39 +417,29 @@ export default function Home() {
                 />
               </div>
               <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Sea Freight</h3>
-                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                  Global ocean freight services beyond the Australia&ndash;Dubai corridor, including Asia, Europe, and the Americas.
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'var(--c-ink)', marginBottom: '10px' }}>International sea freight</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', lineHeight: 1.7, marginBottom: '20px' }} className="flex-1">
+                  Global ocean freight services beyond the Australia–Dubai corridor, including Asia, Europe, and the Americas.
                 </p>
-                <div style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  letterSpacing: '1px', 
-                  textTransform: 'uppercase', 
-                  color: hoveredCard === 2 ? '#0F6E56' : '#2563EB',
-                  transition: 'color 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  LEARN MORE <span style={{ transform: hoveredCard === 2 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '12px', color: hoveredCard === 2 ? 'var(--c-teal)' : 'var(--c-ink-soft)', transition: 'color 0.25s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Learn more <span style={{ transform: hoveredCard === 2 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s', display: 'inline-block' }}>→</span>
                 </div>
               </div>
             </div>
 
             {/* Card 3 */}
-            <div 
-              className="flex flex-col bg-white overflow-hidden" 
+            <div
+              className="flex flex-col bg-white overflow-hidden"
               onClick={() => setOpenServiceModal(3)}
               onMouseEnter={() => setHoveredCard(3)}
               onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                borderRadius: '8px', 
-                padding: '0 0 24px 0', 
-                borderLeft: hoveredCard === 3 ? '3px solid #0F6E56' : '3px solid #2563EB', 
-                boxShadow: hoveredCard === 3 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transform: hoveredCard === 3 ? 'translateY(-8px)' : 'translateY(0)',
-                transition: 'all 0.3s ease',
+              style={{
+                borderRadius: '10px',
+                padding: '0 0 24px 0',
+                borderLeft: hoveredCard === 3 ? '3px solid var(--c-teal)' : '3px solid transparent',
+                boxShadow: hoveredCard === 3 ? '0 20px 48px rgba(26,122,98,0.12)' : '0 2px 8px rgba(11,18,32,0.06)',
+                transform: hoveredCard === 3 ? 'translateY(-6px)' : 'translateY(0)',
+                transition: 'all 0.3s cubic-bezier(0.32,0.72,0,1)',
                 cursor: 'pointer'
               }}
             >
@@ -594,9 +449,9 @@ export default function Home() {
                   alt="International Air Freight"
                   width={600}
                   height={160}
-                  style={{ 
-                    width: '100%', 
-                    height: '160px', 
+                  style={{
+                    width: '100%',
+                    height: '160px',
                     objectFit: 'cover',
                     borderRadius: '8px 8px 0 0',
                     transform: hoveredCard === 3 ? 'scale(1.05)' : 'scale(1)',
@@ -605,39 +460,29 @@ export default function Home() {
                 />
               </div>
               <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>International Air Freight</h3>
-                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                  Time-sensitive cargo handled with speed and care. Ideal for urgent shipments and high-value goods.
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'var(--c-ink)', marginBottom: '10px' }}>International air freight</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', lineHeight: 1.7, marginBottom: '20px' }} className="flex-1">
+                  Time-sensitive cargo handled with care. Ideal for urgent shipments and high-value goods.
                 </p>
-                <div style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  letterSpacing: '1px', 
-                  textTransform: 'uppercase', 
-                  color: hoveredCard === 3 ? '#0F6E56' : '#2563EB',
-                  transition: 'color 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  LEARN MORE <span style={{ transform: hoveredCard === 3 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '12px', color: hoveredCard === 3 ? 'var(--c-teal)' : 'var(--c-ink-soft)', transition: 'color 0.25s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Learn more <span style={{ transform: hoveredCard === 3 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s', display: 'inline-block' }}>→</span>
                 </div>
               </div>
             </div>
 
             {/* Card 4 */}
-            <div 
-              className="flex flex-col bg-white overflow-hidden" 
+            <div
+              className="flex flex-col bg-white overflow-hidden"
               onClick={() => setOpenServiceModal(4)}
               onMouseEnter={() => setHoveredCard(4)}
               onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                borderRadius: '8px', 
-                padding: '0 0 24px 0', 
-                borderLeft: hoveredCard === 4 ? '3px solid #0F6E56' : '3px solid #16a34a', 
-                boxShadow: hoveredCard === 4 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transform: hoveredCard === 4 ? 'translateY(-8px)' : 'translateY(0)',
-                transition: 'all 0.3s ease',
+              style={{
+                borderRadius: '10px',
+                padding: '0 0 24px 0',
+                borderLeft: hoveredCard === 4 ? '3px solid var(--c-teal)' : '3px solid transparent',
+                boxShadow: hoveredCard === 4 ? '0 20px 48px rgba(26,122,98,0.12)' : '0 2px 8px rgba(11,18,32,0.06)',
+                transform: hoveredCard === 4 ? 'translateY(-6px)' : 'translateY(0)',
+                transition: 'all 0.3s cubic-bezier(0.32,0.72,0,1)',
                 cursor: 'pointer'
               }}
             >
@@ -647,9 +492,9 @@ export default function Home() {
                   alt="Vehicle & Automotive Transport"
                   width={600}
                   height={160}
-                  style={{ 
-                    width: '100%', 
-                    height: '160px', 
+                  style={{
+                    width: '100%',
+                    height: '160px',
                     objectFit: 'cover',
                     borderRadius: '8px 8px 0 0',
                     transform: hoveredCard === 4 ? 'scale(1.05)' : 'scale(1)',
@@ -658,39 +503,29 @@ export default function Home() {
                 />
               </div>
               <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Vehicle & Automotive Transport</h3>
-                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'var(--c-ink)', marginBottom: '10px' }}>Vehicle & automotive transport</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', lineHeight: 1.7, marginBottom: '20px' }} className="flex-1">
                   Open and enclosed car carriers. Auction pickups, dealership deliveries, non-runners, and prestige vehicles.
                 </p>
-                <div style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  letterSpacing: '1px', 
-                  textTransform: 'uppercase', 
-                  color: hoveredCard === 4 ? '#0F6E56' : '#2563EB',
-                  transition: 'color 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  LEARN MORE <span style={{ transform: hoveredCard === 4 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '12px', color: hoveredCard === 4 ? 'var(--c-teal)' : 'var(--c-ink-soft)', transition: 'color 0.25s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Learn more <span style={{ transform: hoveredCard === 4 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s', display: 'inline-block' }}>→</span>
                 </div>
               </div>
             </div>
 
             {/* Card 5 */}
-            <div 
-              className="flex flex-col bg-white overflow-hidden" 
+            <div
+              className="flex flex-col bg-white overflow-hidden"
               onClick={() => setOpenServiceModal(5)}
               onMouseEnter={() => setHoveredCard(5)}
               onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                borderRadius: '8px', 
-                padding: '0 0 24px 0', 
-                borderLeft: hoveredCard === 5 ? '3px solid #0F6E56' : '3px solid #2563EB', 
-                boxShadow: hoveredCard === 5 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transform: hoveredCard === 5 ? 'translateY(-8px)' : 'translateY(0)',
-                transition: 'all 0.3s ease',
+              style={{
+                borderRadius: '10px',
+                padding: '0 0 24px 0',
+                borderLeft: hoveredCard === 5 ? '3px solid var(--c-teal)' : '3px solid transparent',
+                boxShadow: hoveredCard === 5 ? '0 20px 48px rgba(26,122,98,0.12)' : '0 2px 8px rgba(11,18,32,0.06)',
+                transform: hoveredCard === 5 ? 'translateY(-6px)' : 'translateY(0)',
+                transition: 'all 0.3s cubic-bezier(0.32,0.72,0,1)',
                 cursor: 'pointer'
               }}
             >
@@ -700,9 +535,9 @@ export default function Home() {
                   alt="Wharf & Container Cartage"
                   width={600}
                   height={160}
-                  style={{ 
-                    width: '100%', 
-                    height: '160px', 
+                  style={{
+                    width: '100%',
+                    height: '160px',
                     objectFit: 'cover',
                     borderRadius: '8px 8px 0 0',
                     transform: hoveredCard === 5 ? 'scale(1.05)' : 'scale(1)',
@@ -711,39 +546,29 @@ export default function Home() {
                 />
               </div>
               <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Wharf & Container Cartage</h3>
-                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
-                  Side-loaders, skeletal trailers, drop-and-swap operations from the Port of Melbourne and surrounding wharves.
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'var(--c-ink)', marginBottom: '10px' }}>Wharf & container cartage</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', lineHeight: 1.7, marginBottom: '20px' }} className="flex-1">
+                  Side-loaders, skeletal trailers, drop-and-swap operations from the Port of Melbourne.
                 </p>
-                <div style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  letterSpacing: '1px', 
-                  textTransform: 'uppercase', 
-                  color: hoveredCard === 5 ? '#0F6E56' : '#2563EB',
-                  transition: 'color 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  LEARN MORE <span style={{ transform: hoveredCard === 5 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '12px', color: hoveredCard === 5 ? 'var(--c-teal)' : 'var(--c-ink-soft)', transition: 'color 0.25s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Learn more <span style={{ transform: hoveredCard === 5 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s', display: 'inline-block' }}>→</span>
                 </div>
               </div>
             </div>
 
             {/* Card 6 */}
-            <div 
-              className="flex flex-col bg-white overflow-hidden" 
+            <div
+              className="flex flex-col bg-white overflow-hidden"
               onClick={() => setOpenServiceModal(6)}
               onMouseEnter={() => setHoveredCard(6)}
               onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                borderRadius: '8px', 
-                padding: '0 0 24px 0', 
-                borderLeft: hoveredCard === 6 ? '3px solid #0F6E56' : '3px solid #16a34a', 
-                boxShadow: hoveredCard === 6 ? '0 20px 48px rgba(15,110,86,0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
-                transform: hoveredCard === 6 ? 'translateY(-8px)' : 'translateY(0)',
-                transition: 'all 0.3s ease',
+              style={{
+                borderRadius: '10px',
+                padding: '0 0 24px 0',
+                borderLeft: hoveredCard === 6 ? '3px solid var(--c-teal)' : '3px solid transparent',
+                boxShadow: hoveredCard === 6 ? '0 20px 48px rgba(26,122,98,0.12)' : '0 2px 8px rgba(11,18,32,0.06)',
+                transform: hoveredCard === 6 ? 'translateY(-6px)' : 'translateY(0)',
+                transition: 'all 0.3s cubic-bezier(0.32,0.72,0,1)',
                 cursor: 'pointer'
               }}
             >
@@ -753,9 +578,9 @@ export default function Home() {
                   alt="Local & Industrial Freight"
                   width={600}
                   height={160}
-                  style={{ 
-                    width: '100%', 
-                    height: '160px', 
+                  style={{
+                    width: '100%',
+                    height: '160px',
                     objectFit: 'cover',
                     borderRadius: '8px 8px 0 0',
                     transform: hoveredCard === 6 ? 'scale(1.05)' : 'scale(1)',
@@ -764,105 +589,46 @@ export default function Home() {
                 />
               </div>
               <div className="flex flex-col flex-1" style={{ padding: '20px 24px 0' }}>
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628', marginBottom: '12px' }}>Local & Industrial Freight</h3>
-                <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.6, marginBottom: '24px' }} className="flex-1">
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'var(--c-ink)', marginBottom: '10px' }}>Local & industrial freight</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', lineHeight: 1.7, marginBottom: '20px' }} className="flex-1">
                   Tautliner/curtain-sider services, hot-shot urgent deliveries, and palletised goods across Australia.
                 </p>
-                <div style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontWeight: 'bold', 
-                  fontSize: '11px', 
-                  letterSpacing: '1px', 
-                  textTransform: 'uppercase', 
-                  color: hoveredCard === 6 ? '#0F6E56' : '#2563EB',
-                  transition: 'color 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  LEARN MORE <span style={{ transform: hoveredCard === 6 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s ease', display: 'inline-block', marginLeft: '4px' }}>&rarr;</span>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '12px', color: hoveredCard === 6 ? 'var(--c-teal)' : 'var(--c-ink-soft)', transition: 'color 0.25s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Learn more <span style={{ transform: hoveredCard === 6 ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s', display: 'inline-block' }}>→</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      {/* How to Book With Us Section */}
-      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: 'white' }}>
+      {/* How to book */}
+      <section className="w-full px-5 py-16 md:py-24 md:px-10" style={{ background: 'white' }}>
         <div className="mx-auto max-w-[1200px]">
-          {/* Header */}
-          <div className="mb-[48px]">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
-              SIMPLE PROCESS
-            </div>
-            <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '32px', color: '#0a1628', marginBottom: '12px' }}>
-              How to Book With Us
-            </h2>
-            <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.8 }}>
-              We don&apos;t book online. Every shipment is handled personally &mdash; so you always speak to someone who knows your cargo.
+          <div className="mb-[52px]">
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '10px' }}>Simple process</div>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(26px, 3vw, 36px)', color: 'var(--c-ink)', marginBottom: '14px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>How to book with us</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink-mid)', lineHeight: 1.8, maxWidth: '520px' }}>
+              We don&apos;t book online. Every shipment is handled personally — so you speak to someone who knows your cargo.
             </p>
           </div>
-
-          {/* Steps Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Step 1 */}
-            <div className="flex flex-col items-center">
-              <div className="flex items-center justify-center" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #0F6E56, #2563EB)', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '18px', margin: '0 auto 16px' }}>
-                1
+            {([['01', 'Browse services', 'Explore our services and identify the type of freight that matches your needs.'], ['02', 'Contact us', 'Email or call us with your cargo details — origin, destination, type, weight, and timeline.'], ['03', 'Receive a quote', 'We prepare a detailed, personalised freight quote for your specific shipment.'], ['04', 'We handle the rest', 'Once confirmed, we coordinate pickup, documentation, customs, and delivery end-to-end.']] as [string, string, string][]).map(([num, title, desc]) => (
+              <div key={num} className="flex flex-col">
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '52px', color: 'var(--c-teal-light)', opacity: 0.2, lineHeight: 1, marginBottom: '16px', letterSpacing: '-0.04em' }}>{num}</div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '16px', color: 'var(--c-ink)', marginBottom: '8px' }}>{title}</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', lineHeight: 1.8 }}>{desc}</p>
               </div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '15px', color: '#0a1628', textAlign: 'center', marginBottom: '8px' }}>Browse Services</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#555', lineHeight: 1.8, textAlign: 'center', maxWidth: '200px', margin: '0 auto' }}>
-                Explore our services menu and identify the service that fits your freight needs.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex flex-col items-center">
-              <div className="flex items-center justify-center" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #0F6E56, #2563EB)', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '18px', margin: '0 auto 16px' }}>
-                2
-              </div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '15px', color: '#0a1628', textAlign: 'center', marginBottom: '8px' }}>Contact Us</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#555', lineHeight: 1.8, textAlign: 'center', maxWidth: '200px', margin: '0 auto' }}>
-                Email or call us with your cargo details &mdash; origin, destination, type, weight, and timeline.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex flex-col items-center">
-              <div className="flex items-center justify-center" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #0F6E56, #2563EB)', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '18px', margin: '0 auto 16px' }}>
-                3
-              </div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '15px', color: '#0a1628', textAlign: 'center', marginBottom: '8px' }}>Receive a Quote</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#555', lineHeight: 1.8, textAlign: 'center', maxWidth: '200px', margin: '0 auto' }}>
-                We assess your requirements and send you a detailed, personalised freight quote.
-              </p>
-            </div>
-
-            {/* Step 4 */}
-            <div className="flex flex-col items-center">
-              <div className="flex items-center justify-center" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #0F6E56, #2563EB)', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '18px', margin: '0 auto 16px' }}>
-                4
-              </div>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '15px', color: '#0a1628', textAlign: 'center', marginBottom: '8px' }}>We Handle the Rest</h3>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#555', lineHeight: 1.8, textAlign: 'center', maxWidth: '200px', margin: '0 auto' }}>
-                Once confirmed, we coordinate pickup, documentation, customs, and delivery end-to-end.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-
       {/* Key Routes Section */}
       <section id="freight-corridors" className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
         <div className="mx-auto max-w-[1200px]">
-          {/* Header */}
-          <div className="mb-[32px]">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
-              KEY ROUTES
-            </div>
-            <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '32px', color: '#0a1628', marginBottom: '32px' }}>
-              Our Primary Freight Corridors
-            </h2>
+          <div className="mb-[40px]">
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '10px' }}>Key routes</div>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(26px, 3vw, 36px)', color: 'var(--c-ink)', marginBottom: '28px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>Our primary freight corridors</h2>
           </div>
 
           {/* Cards Container */}
@@ -871,69 +637,61 @@ export default function Home() {
             <div className="w-full flex flex-col md:flex-row items-center justify-between" style={{ background: '#0a1628', borderRadius: '10px', padding: '28px 36px' }}>
               {/* Left Side */}
               <div className="flex flex-col text-center md:text-left mb-6 md:mb-0 w-full md:w-1/3">
-                <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '20px', color: 'white' }}>Australia</div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '4px' }}>Melbourne &middot; Sydney &middot; Brisbane</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'white' }}>Australia</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>Melbourne · Sydney · Brisbane</div>
               </div>
 
               {/* Middle */}
               <div className="flex flex-col items-center flex-1 w-full md:w-1/3 px-4">
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', textAlign: 'center', marginBottom: '8px' }}>
-                  SEA FREIGHT &middot; ~18&ndash;22 DAYS TRANSIT
-                </div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginBottom: '8px' }}>Sea freight · 18–22 days transit</div>
 
                 {/* Line with dots */}
                 <div className="w-full flex items-center justify-between relative mb-3">
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4AE89A', zIndex: 10 }}></div>
-                  <div className="flex-1" style={{ height: '1px', background: '#2563EB', opacity: 0.5 }}></div>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4AE89A', zIndex: 10 }}></div>
-                  <div className="flex-1" style={{ height: '1px', background: '#2563EB', opacity: 0.5 }}></div>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4AE89A', zIndex: 10 }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-teal-light)', zIndex: 10 }}></div>
+                  <div className="flex-1" style={{ height: '1px', background: 'var(--c-teal)', opacity: 0.4 }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-teal-light)', zIndex: 10 }}></div>
+                  <div className="flex-1" style={{ height: '1px', background: 'var(--c-teal)', opacity: 0.4 }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-teal-light)', zIndex: 10 }}></div>
                 </div>
 
-                <div style={{ background: '#0F6E56', color: 'white', borderRadius: '999px', padding: '4px 14px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', marginTop: '4px' }}>
-                  ⭐ Primary Route
-                </div>
+                <div style={{ background: 'var(--c-teal)', color: 'white', borderRadius: '999px', padding: '4px 14px', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '11px', marginTop: '4px' }}>Primary route</div>
               </div>
 
               {/* Right Side */}
               <div className="flex flex-col text-center md:text-right mt-6 md:mt-0 w-full md:w-1/3">
-                <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '20px', color: 'white' }}>Dubai, UAE</div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '4px' }}>Jebel Ali Port &middot; Free Zones</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'white' }}>Dubai, UAE</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>Jebel Ali Port · Free Zones</div>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div className="w-full flex flex-col md:flex-row items-center justify-between" style={{ background: '#0a2e1f', borderRadius: '10px', padding: '28px 36px' }}>
+            <div className="w-full flex flex-col md:flex-row items-center justify-between" style={{ background: 'var(--c-bg-dark)', borderRadius: '10px', padding: '28px 36px' }}>
               {/* Left Side */}
               <div className="flex flex-col text-center md:text-left mb-6 md:mb-0 w-full md:w-1/3">
-                <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '20px', color: 'white' }}>Australia</div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '4px' }}>All major ports</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'white' }}>Australia</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>All major ports</div>
               </div>
 
               {/* Middle */}
               <div className="flex flex-col items-center flex-1 w-full md:w-1/3 px-4">
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', textAlign: 'center', marginBottom: '8px' }}>
-                  INTERNATIONAL &middot; MULTIPLE DESTINATIONS
-                </div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginBottom: '8px' }}>International · multiple destinations</div>
 
                 {/* Line with dots */}
                 <div className="w-full flex items-center justify-between relative mb-3">
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4A9EFF', zIndex: 10 }}></div>
-                  <div className="flex-1" style={{ height: '1px', background: '#2563EB', opacity: 0.5 }}></div>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4A9EFF', zIndex: 10 }}></div>
-                  <div className="flex-1" style={{ height: '1px', background: '#2563EB', opacity: 0.5 }}></div>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4A9EFF', zIndex: 10 }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-teal-light)', zIndex: 10 }}></div>
+                  <div className="flex-1" style={{ height: '1px', background: 'var(--c-teal)', opacity: 0.4 }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-teal-light)', zIndex: 10 }}></div>
+                  <div className="flex-1" style={{ height: '1px', background: 'var(--c-teal)', opacity: 0.4 }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-teal-light)', zIndex: 10 }}></div>
                 </div>
 
-                <div style={{ background: '#1D9E75', color: 'white', borderRadius: '999px', padding: '4px 14px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '11px', marginTop: '4px' }}>
-                  🌐 Global Reach
-                </div>
+                <div style={{ background: 'var(--c-teal)', color: 'white', borderRadius: '999px', padding: '4px 14px', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '11px', marginTop: '4px' }}>Global reach</div>
               </div>
 
               {/* Right Side */}
               <div className="flex flex-col text-center md:text-right mt-6 md:mt-0 w-full md:w-1/3">
-                <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '20px', color: 'white' }}>Worldwide</div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '4px' }}>Asia &middot; Europe &middot; Americas</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '20px', color: 'white' }}>Worldwide</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>Asia · Europe · Americas</div>
               </div>
             </div>
           </div>
@@ -941,77 +699,55 @@ export default function Home() {
       </section>
 
       {/* About Us Section */}
-      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: 'white' }}>
+      <section id="about" className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: 'white' }}>
         <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row gap-[48px] items-start">
           {/* Left Column */}
           <div className="w-full md:w-[55%]">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
-              ABOUT US
-            </div>
-            <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '32px', color: '#0a1628', lineHeight: 1.2, marginBottom: '24px' }}>
-              Your Logistics Partner, Not Just a Carrier
-            </h2>
-            <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#444', lineHeight: 1.9, marginBottom: '16px' }}>
-              PrimeLane Logistics is an Australian-based freight company specialising in container shipping, vehicle transport, and industrial freight &mdash; with a strong focus on the Australia&ndash;Dubai trade corridor.
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '10px' }}>About us</div>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(26px, 3vw, 38px)', color: 'var(--c-ink)', lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-0.02em' }}>Your logistics partner, not just a carrier</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink-mid)', lineHeight: 1.9, marginBottom: '16px' }}>
+              PrimeLane Logistics is an Australian-based freight company specialising in container shipping, vehicle transport, and industrial freight — with a strong focus on the Australia–Dubai trade corridor.
             </p>
-            <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#444', lineHeight: 1.9, marginBottom: '28px' }}>
-              We believe in doing business the right way: every client speaks to a real person, every quote is prepared individually, and every shipment is tracked with care. We are fully licensed for Dangerous Goods transport (Class 2&ndash;9) and carry the accreditations required for international freight.
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink-mid)', lineHeight: 1.9, marginBottom: '32px' }}>
+              We believe in doing business the right way: every client speaks to a real person, every quote is prepared individually, and every shipment is tracked with care. Fully licensed for Dangerous Goods transport (Class 2–9).
             </p>
-            <button style={{ background: 'linear-gradient(to right, #0F6E56, #2563EB)', color: 'white', border: 'none', padding: '14px 28px', borderRadius: '4px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', letterSpacing: '0.5px', textTransform: 'uppercase', cursor: 'pointer' }}>
-              WHY CHOOSE PRIMELANE
-            </button>
+            <Link href="/about/why-choose-us" style={{ textDecoration: 'none' }}>
+              <button style={{ background: 'var(--c-teal)', color: 'white', border: 'none', padding: '13px 28px', borderRadius: '999px', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '13px', cursor: 'pointer', letterSpacing: '0.01em', transition: 'background 0.2s' }}>
+                Why choose PrimeLane
+              </button>
+            </Link>
           </div>
 
           {/* Right Column */}
           <div className="w-full md:w-[45%]">
-            <div style={{ background: '#f0f4f8', borderRadius: '10px', padding: '28px', border: '1px solid #dce8e2' }}>
-              {/* Section 1 */}
+            <div style={{ background: 'var(--c-bg-light)', borderRadius: '12px', padding: '28px' }}>
               <div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '6px' }}>
-                  BASED IN
-                </div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '6px' }}>Based in</div>
                 <div className="flex items-center">
-                  <span style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628' }}>Australia</span>
-                  <span style={{ background: '#0F6E56', color: 'white', borderRadius: '3px', padding: '1px 5px', fontSize: '10px', marginLeft: '6px', fontFamily: 'Arial, sans-serif' }}>AU</span>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '16px', color: 'var(--c-ink)' }}>Australia</span>
+                  <span style={{ background: 'var(--c-teal)', color: 'white', borderRadius: '3px', padding: '1px 6px', fontSize: '10px', marginLeft: '8px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>AU</span>
                 </div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                  primelanelogistics.com.au
-                </div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--c-ink-soft)', marginTop: '2px' }}>primelanelogistics.com.au</div>
               </div>
-
-              <div style={{ height: '1px', background: '#e8ede9', margin: '16px 0' }}></div>
-
-              {/* Section 2 */}
+              <div style={{ height: '1px', background: 'var(--c-divider)', margin: '16px 0' }} />
               <div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '6px' }}>
-                  PRIMARY ROUTE
-                </div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '6px' }}>Primary route</div>
                 <div className="flex items-center">
-                  <span style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: '#0a1628' }}>Australia &rarr; Dubai, UAE</span>
-                  <span style={{ background: '#0F6E56', color: 'white', borderRadius: '3px', padding: '1px 5px', fontSize: '10px', marginLeft: '6px', fontFamily: 'Arial, sans-serif' }}>AE</span>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '16px', color: 'var(--c-ink)' }}>Australia → Dubai, UAE</span>
+                  <span style={{ background: 'var(--c-teal)', color: 'white', borderRadius: '3px', padding: '1px 6px', fontSize: '10px', marginLeft: '8px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>AE</span>
                 </div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                  FCL &middot; LCL &middot; Air &middot; Break-bulk
-                </div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--c-ink-soft)', marginTop: '2px' }}>FCL · LCL · Air · Break-bulk</div>
               </div>
-
-              <div style={{ height: '1px', background: '#e8ede9', margin: '16px 0' }}></div>
-
-              {/* Section 3 */}
+              <div style={{ height: '1px', background: 'var(--c-divider)', margin: '16px 0' }} />
               <div>
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '6px' }}>
-                  CERTIFICATIONS
-                </div>
-                <div className="flex flex-col gap-1">
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', lineHeight: 2.2 }}>
-                    ✅ DG Licensed (Class 2&ndash;9)
-                  </div>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', lineHeight: 2.2 }}>
-                    ✅ International Freight Accredited
-                  </div>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', lineHeight: 2.2 }}>
-                    ✅ Condition Report Service (all vehicles)
-                  </div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '10px' }}>Certifications</div>
+                <div className="flex flex-col gap-2">
+                  {(['DG Licensed (Class 2–9)', 'International freight accredited', 'Condition report service (all vehicles)'] as string[]).map(item => (
+                    <div key={item} className="flex items-center gap-2">
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--c-teal)', flexShrink: 0 }} />
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink)' }}>{item}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -1019,403 +755,211 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="w-full px-5 py-12 md:py-16 md:px-10" style={{ background: '#f0f4f8' }}>
+      {/* FAQ */}
+      <section id="faq" className="w-full px-5 py-16 md:py-24 md:px-10" style={{ background: 'var(--c-bg-light)' }}>
         <div className="mx-auto max-w-[1200px]">
-          {/* Header */}
-          <div className="mb-[32px]">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
-              HELP CENTRE
-            </div>
-            <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '32px', color: '#0a1628', marginBottom: '32px' }}>
-              Frequently Asked Questions
-            </h2>
+          <div className="mb-[48px]">
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--c-teal)', fontWeight: 700, marginBottom: '10px' }}>Help centre</div>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(26px, 3vw, 36px)', color: 'var(--c-ink)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>Frequently asked questions</h2>
           </div>
-
-          {/* FAQ Items */}
-          <div className="flex flex-col w-full">
-            {/* Q1 */}
-            <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div
-                onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
-              >
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#0a1628', fontWeight: 400, margin: 0 }}>
-                  How do I get a freight quote?
-                </h3>
-                <div style={{ color: '#2563EB', fontSize: '20px', fontWeight: 300 }}>
-                  {openFaq === 1 ? '−' : '+'}
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
+            {([
+              ['Do you offer both FCL and LCL shipping?', 'Yes. We offer Full Container Load (FCL) for those wanting a dedicated container (highly recommended for high-value vehicles) and Less than Container Load (LCL) for smaller shipments to help keep costs down.'],
+              ['What types of vehicles can I ship to Dubai?', 'We handle everything from standard passenger cars and SUVs to luxury vehicles and commercial automotive transport.'],
+              ['Are you certified to handle hazardous materials?', 'Absolutely. Primelane Logistics is fully DG Certified for Classes 2 through 9, meaning we are legally qualified to transport dangerous goods that other carriers might turn away.'],
+              ['How do I track my shipment?', (
+                <>
+                  Tracking is easy. Simply email us at <a href="mailto:contact@primelanelogistics.com.au" style={{ color: 'var(--c-teal)', fontWeight: 600, textDecoration: 'none' }}>contact@primelanelogistics.com.au</a> with your order or booking reference number, and our team will provide a real-time status update.
+                </>
+              )],
+            ] as [string, React.ReactNode][]).map(([q, a]) => (
+              <div key={q} style={{ borderTop: '1px solid var(--c-divider)', paddingTop: '20px' }}>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'var(--c-ink)', marginBottom: '8px' }}>{q}</h3>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--c-ink-mid)', lineHeight: 1.8 }}>{a}</div>
               </div>
-              {openFaq === 1 && (
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.9, paddingBottom: '20px' }}>
-                  Simply email us at contact@primelanelogistics.com.au or call +61 421 821 220. Tell us what you need to ship, the origin, destination, weight, and timeline &mdash; and we&apos;ll prepare a detailed, personalised quote for you.
-                </div>
-              )}
-            </div>
-
-            {/* Q2 */}
-            <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div
-                onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
-              >
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#0a1628', fontWeight: 400, margin: 0 }}>
-                  What is the transit time from Australia to Dubai?
-                </h3>
-                <div style={{ color: '#2563EB', fontSize: '20px', fontWeight: 300 }}>
-                  {openFaq === 2 ? '−' : '+'}
-                </div>
-              </div>
-              {openFaq === 2 && (
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.9, paddingBottom: '20px' }}>
-                  Sea freight from Australia to Dubai (Jebel Ali) typically takes 18&ndash;22 days depending on the port of origin. Sydney, Melbourne, and Brisbane are our primary departure ports. Air freight takes 3&ndash;6 business days.
-                </div>
-              )}
-            </div>
-
-            {/* Q3 */}
-            <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div
-                onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
-              >
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#0a1628', fontWeight: 400, margin: 0 }}>
-                  Can you transport dangerous goods (DG)?
-                </h3>
-                <div style={{ color: '#2563EB', fontSize: '20px', fontWeight: 300 }}>
-                  {openFaq === 3 ? '−' : '+'}
-                </div>
-              </div>
-              {openFaq === 3 && (
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.9, paddingBottom: '20px' }}>
-                  Yes. We are fully licensed to transport Dangerous Goods Class 2&ndash;9. All our drivers and vehicles are DG certified and compliant with Australian and international regulations.
-                </div>
-              )}
-            </div>
-
-            {/* Q4 */}
-            <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div
-                onClick={() => setOpenFaq(openFaq === 4 ? null : 4)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
-              >
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#0a1628', fontWeight: 400, margin: 0 }}>
-                  Do you offer vehicle transport within Australia?
-                </h3>
-                <div style={{ color: '#2563EB', fontSize: '20px', fontWeight: 300 }}>
-                  {openFaq === 4 ? '−' : '+'}
-                </div>
-              </div>
-              {openFaq === 4 && (
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.9, paddingBottom: '20px' }}>
-                  Yes. We offer open and enclosed car carrier transport across Australia. We handle auction pickups, dealership deliveries, non-runners, and prestige vehicles with full condition reports.
-                </div>
-              )}
-            </div>
-
-            {/* Q5 */}
-            <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div
-                onClick={() => setOpenFaq(openFaq === 5 ? null : 5)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
-              >
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#0a1628', fontWeight: 400, margin: 0 }}>
-                  Can you do LCL (Less-than-Container-Load) shipping?
-                </h3>
-                <div style={{ color: '#2563EB', fontSize: '20px', fontWeight: 300 }}>
-                  {openFaq === 5 ? '−' : '+'}
-                </div>
-              </div>
-              {openFaq === 5 && (
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.9, paddingBottom: '20px' }}>
-                  Yes. If you don&apos;t have enough cargo to fill a full container, we offer LCL (consolidated) shipping where your goods share container space with other cargo, reducing your costs.
-                </div>
-              )}
-            </div>
-
-            {/* Q6 */}
-            <div style={{ borderBottom: '1px solid #dce8e2' }}>
-              <div
-                onClick={() => setOpenFaq(openFaq === 6 ? null : 6)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', cursor: 'pointer' }}
-              >
-                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#0a1628', fontWeight: 400, margin: 0 }}>
-                  What areas do you service within Australia?
-                </h3>
-                <div style={{ color: '#2563EB', fontSize: '20px', fontWeight: 300 }}>
-                  {openFaq === 6 ? '−' : '+'}
-                </div>
-              </div>
-              {openFaq === 6 && (
-                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#555', lineHeight: 1.9, paddingBottom: '20px' }}>
-                  We service all major Australian cities and regional areas including Melbourne, Sydney, Brisbane, Perth, Adelaide, and beyond. Contact us with your specific pickup location and we&apos;ll confirm availability.
-                </div>
-              )}
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Get In Touch Section */}
-      <section id="contact" className="w-full px-5 py-12 md:py-16 md:px-10" style={{
-        backgroundImage: `linear-gradient(135deg, rgba(10,22,40,0.92) 0%, rgba(13,33,55,0.88) 50%, rgba(10,46,31,0.88) 100%), url('/Logistics.jpeg')`,
+      {/* GET IN TOUCH: WIDE EDITORIAL DESIGN */}
+      <section id="contact" className="w-full px-5 py-32 md:py-48 md:px-10" style={{
+        background: '#0B1220',
+        backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0.7) 0%, #0B1220 100%), url('/Logistics.jpeg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundAttachment: 'fixed',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row gap-[48px]">
-          {/* Left Column */}
-          <div className="w-full md:w-[55%] flex flex-col">
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', fontWeight: 700, marginBottom: '8px' }}>
-              GET IN TOUCH
-            </div>
-            <h2 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '32px', color: 'white', lineHeight: 1.2, marginBottom: '16px' }}>
-              Request a Quote or Ask a Question
-            </h2>
-            <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '14px', color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.8, marginBottom: '32px' }}>
-              We handle every enquiry personally. No online booking forms &mdash; just a direct conversation to make sure we understand exactly what your cargo needs.
-            </p>
-
-            {/* Contact Items */}
-            <div className="flex flex-col">
-              {/* Item 1 - Email */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '24px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px', flexShrink: 0, color: '#4A9EFF', fontSize: '20px' }}>
-                  ✉️
-                </div>
-                <div className="flex flex-col">
-                  <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '15px', color: 'white', marginBottom: '4px' }}>Email Us</h3>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)' }}>For quotes, bookings, and general enquiries:</div>
-                  <a href="mailto:contact@primelanelogistics.com.au" style={{ color: '#4AE89A', fontWeight: 700, fontFamily: 'Arial, sans-serif', fontSize: '13px' }}>contact@primelanelogistics.com.au</a>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px' }}>We aim to respond within 1 business day.</div>
-                </div>
-              </div>
-
-              {/* Item 2 - Phone */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '24px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px', flexShrink: 0, color: '#f87171', fontSize: '20px' }}>
-                  📞
-                </div>
-                <div className="flex flex-col">
-                  <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '15px', color: 'white', marginBottom: '4px' }}>Call Us</h3>
-                  <a href="tel:+61421821220" style={{ color: '#4AE89A', fontWeight: 700, fontFamily: 'Arial, sans-serif', fontSize: '13px' }}>+61 421 821 220</a>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px' }}>Available during Australian business hours.</div>
-                </div>
-              </div>
-
-              {/* Item 3 - Website */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '24px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px', flexShrink: 0, color: '#4A9EFF', fontSize: '20px' }}>
-                  🌐
-                </div>
-                <div className="flex flex-col">
-                  <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '15px', color: 'white', marginBottom: '4px' }}>Website</h3>
-                  <a href="https://primelanelogistics.com.au" style={{ color: '#4AE89A', fontWeight: 700, fontFamily: 'Arial, sans-serif', fontSize: '13px' }}>primelanelogistics.com.au</a>
-                </div>
-              </div>
-            </div>
-
-            {/* Info Box */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '18px 20px', marginTop: '8px' }}>
-              <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.8, margin: 0 }}>
-                <span style={{ fontWeight: 'bold', color: 'white' }}>How our booking process works:</span> Contact us with your cargo details (type, weight, dimensions, origin, destination, and preferred dates). We&apos;ll prepare a personalised quote, confirm the details with you, and handle everything from pickup to delivery.
+        {/* Ambient glows */}
+        <div style={{ position: 'absolute', top: '20%', right: '-10%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(26,122,98,0.12) 0%, transparent 70%)', filter: 'blur(100px)', pointerEvents: 'none' }} />
+        
+        <div className="mx-auto max-w-[1300px] relative z-10">
+          <div className="flex flex-col lg:flex-row gap-24 items-start">
+            
+            {/* Left Content: Editorial Typography */}
+            <div className="w-full lg:w-[60%]">
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--c-teal-light)', fontWeight: 700, marginBottom: '24px', opacity: 0.8 }}>Request a quote</div>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(32px, 8vw, 84px)', color: 'white', lineHeight: 0.9, marginBottom: '40px', letterSpacing: '-0.05em', textWrap: 'balance' }}>
+                Talk directly to a <span style={{ color: 'var(--c-teal-light)' }}>freight expert.</span>
+              </h2>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '20px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>
+                No automation, no delays. Every enquiry is handled by a dedicated coordinator who understands the nuances of Australian trade corridors.
               </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+                <div className="group">
+                  <div style={{ width: '52px', height: '52px', borderRadius: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', color: 'var(--c-teal-light)', transition: 'all 0.3s' }} className="group-hover:bg-teal-500/10 group-hover:border-teal-500/30">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: 'white', marginBottom: '8px', opacity: 0.4 }}>Email Desk</h3>
+                  <a href="mailto:contact@primelanelogistics.com.au" style={{ color: 'white', fontWeight: 600, fontFamily: 'var(--font-body)', fontSize: '17px', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '2px', transition: 'all 0.3s' }} className="hover:text-teal-400 hover:border-teal-400">contact@primelanelogistics.com.au</a>
+                </div>
+
+                <div className="group">
+                  <div style={{ width: '52px', height: '52px', borderRadius: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', color: 'var(--c-teal-light)', transition: 'all 0.3s' }} className="group-hover:bg-teal-500/10 group-hover:border-teal-500/30">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38a2 2 0 0 1 1.99-2.18H6.6a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6 6l1.27-.83a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+                  </div>
+                  <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: 'white', marginBottom: '8px', opacity: 0.4 }}>Phone Desk</h3>
+                  <a href="tel:+61421821220" style={{ color: 'white', fontWeight: 600, fontFamily: 'var(--font-body)', fontSize: '17px', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '2px', transition: 'all 0.3s' }} className="hover:text-teal-400 hover:border-teal-400">+61 421 821 220</a>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Right Column */}
-          <div className="w-full md:w-[45%]">
-            <div style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '12px', padding: '28px' }}>
-              <h3 style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '16px', color: 'white', marginBottom: '24px' }}>
-                What to Include in Your Enquiry
-              </h3>
-
-              {/* Item 1 */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '14px', flexShrink: 0 }}>
-                  1
+            {/* Right Content: Glassmorphic Surface */}
+            <div className="w-full lg:w-[40%]">
+              <div style={{ 
+                background: 'rgba(255,255,255,0.03)', 
+                backdropFilter: 'blur(40px)', 
+                WebkitBackdropFilter: 'blur(40px)',
+                border: '1px solid rgba(255,255,255,0.1)', 
+                borderRadius: '32px', 
+                padding: '56px 48px',
+                boxShadow: '0 40px 100px rgba(0,0,0,0.4)'
+              }}>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '18px', color: 'white', marginBottom: '40px', letterSpacing: '-0.02em' }}>Checklist for your enquiry</h3>
+                <div className="flex flex-col gap-8">
+                  {[
+                    ['Cargo Type', 'Machinery, vehicles, or general goods'],
+                    ['Metrics', 'Total weight and dimensions (CBM/Pallets)'],
+                    ['Route', 'Exact pickup and delivery locations'],
+                    ['Timeline', 'Required pickup date or urgency']
+                  ].map(([label, desc]) => (
+                    <div key={label} className="flex gap-5">
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-teal-light)', flexShrink: 0, marginTop: '7px', boxShadow: '0 0 15px rgba(34,197,94,0.4)' }} />
+                      <div>
+                        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', color: 'white', marginBottom: '2px' }}>{label}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>{desc}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex flex-col">
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '14px', color: 'white' }}>Cargo type &amp; description</div>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '2px' }}>e.g. machinery, vehicles, chemicals, general goods</div>
-                </div>
+                <Link href="/help-centre/contact" style={{ textDecoration: 'none' }}>
+                  <button
+                    style={{ 
+                      width: '100%', 
+                      marginTop: '56px', 
+                      padding: '22px', 
+                      background: 'var(--c-teal)', 
+                      color: 'white', 
+                      borderRadius: '16px', 
+                      fontFamily: 'var(--font-heading)', 
+                      fontWeight: 800, 
+                      fontSize: '14px', 
+                      letterSpacing: '0.08em', 
+                      textTransform: 'uppercase', 
+                      cursor: 'pointer', 
+                      transition: 'all 0.4s cubic-bezier(0.23,1,0.32,1)', 
+                      border: 'none',
+                      boxShadow: '0 15px 35px rgba(26,122,98,0.3)'
+                    }}
+                    className="hover:scale-[1.03] hover:bg-[#15634f] hover:shadow-[0_25px_50px_rgba(26,122,98,0.4)] active:scale-[0.98]"
+                  >
+                    Request quote
+                  </button>
+                </Link>
               </div>
-
-              {/* Item 2 */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '14px', flexShrink: 0 }}>
-                  2
-                </div>
-                <div className="flex flex-col">
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '14px', color: 'white' }}>Weight &amp; dimensions (approximate)</div>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '2px' }}>Total weight in kg/t, CBM or number of pallets</div>
-                </div>
-              </div>
-
-              {/* Item 3 */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '14px', flexShrink: 0 }}>
-                  3
-                </div>
-                <div className="flex flex-col">
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '14px', color: 'white' }}>Origin &amp; destination</div>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '2px' }}>Full address or port/city</div>
-                </div>
-              </div>
-
-              {/* Item 4 */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '14px', flexShrink: 0 }}>
-                  4
-                </div>
-                <div className="flex flex-col">
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '14px', color: 'white' }}>Preferred timeline</div>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '2px' }}>Pickup date or urgency level</div>
-                </div>
-              </div>
-
-              {/* Item 5 */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB', color: 'white', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '14px', flexShrink: 0 }}>
-                  5
-                </div>
-                <div className="flex flex-col">
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '14px', color: 'white' }}>Any special requirements</div>
-                  <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '2px' }}>Temperature control, DG class, oversized, etc.</div>
-                </div>
-              </div>
-
-              {/* Button */}
-              <button
-                onClick={() => window.location.href = 'mailto:contact@primelanelogistics.com.au'}
-                style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', color: 'white', border: 'none', width: '100%', padding: '14px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', marginTop: '4px' }}
-              >
-                SEND US AN EMAIL &rarr;
-              </button>
             </div>
+
           </div>
         </div>
       </section>
-
-      {/* Footer Section */}
-      <footer className="w-full px-5 py-10 md:px-10" style={{ background: '#060f1a', textAlign: 'center', borderTop: '1px solid rgba(37, 99, 235, 0.3)' }}>
-        <div className="mx-auto max-w-[1200px] flex flex-col items-center">
-          {/* Logo */}
-          <div style={{ margin: '0 auto 12px' }}>
-            <Image
-              src="/logo-2.png"
-              alt="PrimeLane Logistics"
-              width={100}
-              height={44}
-              style={{ objectFit: 'contain', width: 'auto' }}
-            />
-          </div>
-
-          {/* Tagline */}
-          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', marginBottom: '16px' }}>
-            STREAMLINING EVERY MILE
-          </div>
-
-          {/* Contact Line */}
-          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '20px' }}>
-            <a href="mailto:contact@primelanelogistics.com.au" style={{ color: 'rgba(255, 255, 255, 0.45)', textDecoration: 'none' }}>contact@primelanelogistics.com.au</a>
-            {' '}&middot;{' '}
-            <a href="tel:+61421821220" style={{ color: 'rgba(255, 255, 255, 0.45)', textDecoration: 'none' }}>+61 421 821 220</a>
-          </div>
-
-          {/* Nav Links */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8 mb-7">
-            <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>SERVICES</a>
-            <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>ABOUT</a>
-            <a href="#" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>HELP CENTRE</a>
-            <Link href="/contact" className="hover:text-white/70 transition-colors" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', textDecoration: 'none' }}>CONTACT</Link>
-          </div>
-
-          {/* Divider */}
-          <div style={{ width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '20px' }}></div>
-
-          {/* Copyright */}
-          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '11px', color: 'rgba(255, 255, 255, 0.25)' }}>
-            &copy; 2026 PrimeLane Logistics Pty Ltd &middot; primelanelogistics.com.au &middot; ABN: [Your ABN Here]
-          </div>
-        </div>
-      </footer>
 
       {/* Service Modal */}
       {openServiceModal && (
         <div
           onClick={() => setOpenServiceModal(null)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(11,18,32,0.9)', backdropFilter: 'blur(12px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ background: 'white', borderRadius: '16px', maxWidth: '560px', width: '100%', maxHeight: '88vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.3)', padding: 0, position: 'relative' }}
+            style={{ background: 'white', borderRadius: '32px', maxWidth: '640px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 40px 100px rgba(0,0,0,0.5)', position: 'relative' }}
           >
             <button
               onClick={() => setOpenServiceModal(null)}
-              className="bg-black/40 hover:bg-black/70 flex items-center justify-center transition-colors"
-              style={{ position: 'absolute', top: '12px', right: '12px', color: 'white', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', border: 'none', cursor: 'pointer', zIndex: 10 }}
+              style={{ position: 'absolute', top: '24px', right: '24px', background: 'white', border: '1px solid var(--c-divider)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 20 }}
+              className="hover:rotate-90 transition-transform duration-300"
             >
-              &times;
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-ink)" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
 
             {serviceModals.find(m => m.id === openServiceModal) && (
-              <>
-                <div style={{ height: '200px', width: '100%', position: 'relative', borderRadius: '16px 16px 0 0' }}>
+              <div className="flex flex-col">
+                <div style={{ height: '300px', width: '100%', position: 'relative' }}>
                   <Image
                     src={`/Cards/Card ${openServiceModal}.jpeg`}
                     alt="Service"
-                    width={600}
-                    height={200}
-                    style={{ 
-                      width: '100%', 
-                      height: '200px', 
-                      objectFit: 'cover',
-                      borderRadius: '16px 16px 0 0'
-                    }}
+                    fill
+                    style={{ objectFit: 'cover' }}
                   />
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.65))', height: '100%', borderRadius: '16px 16px 0 0' }}></div>
-                  <h2 style={{ position: 'absolute', bottom: 0, left: 0, padding: '20px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '22px', color: 'white', lineHeight: 1.2, margin: 0 }}>
-                    {serviceModals.find(m => m.id === openServiceModal)?.title}
-                  </h2>
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,18,32,0.9) 0%, transparent 70%)' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, padding: '40px' }}>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--c-teal-light)', fontWeight: 700, marginBottom: '12px' }}>Service Portfolio</div>
+                    <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '32px', color: 'white', margin: 0, letterSpacing: '-0.03em' }}>
+                      {serviceModals.find(m => m.id === openServiceModal)?.title}
+                    </h2>
+                  </div>
                 </div>
 
-                <div style={{ padding: '24px 28px' }}>
-                  <p style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#666', lineHeight: 1.7, borderBottom: '1px solid #f0f0f0', paddingBottom: '16px', marginBottom: '4px' }}>
+                <div style={{ padding: '40px' }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--c-ink-mid)', lineHeight: 1.8, marginBottom: '40px' }}>
                     {serviceModals.find(m => m.id === openServiceModal)?.subtitle}
                   </p>
 
-                  {serviceModals.find(m => m.id === openServiceModal)?.sections.map((section, idx) => (
-                    <div key={idx}>
-                      <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#2563EB', marginBottom: '8px', marginTop: '20px' }}>
-                        {section.title}
+                  <div className="grid gap-10">
+                    {serviceModals.find(m => m.id === openServiceModal)?.sections.map((section, idx) => (
+                      <div key={idx}>
+                        <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--c-teal)', marginBottom: '20px' }}>
+                          {section.title}
+                        </h4>
+                        <ul className="grid gap-4">
+                          {section.items.map((item, i) => (
+                            <li key={i} className="flex items-start gap-4">
+                              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--c-teal)', marginTop: '9px', flexShrink: 0 }} />
+                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink)', lineHeight: 1.6 }}>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul style={{ margin: 0, paddingLeft: 0, listStyleType: 'none' }}>
-                        {section.items.map((item, i) => (
-                          <li key={i} style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333', lineHeight: 2, display: 'flex' }}>
-                            <span style={{ color: '#0F6E56', fontWeight: 'bold', marginRight: '8px' }}>&bull;</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ position: 'sticky', bottom: 0, background: 'white', borderTop: '1px solid #f0f0f0', padding: '16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '0 0 16px 16px' }}>
-                  <button
-                    onClick={() => window.location.href = "mailto:contact@primelanelogistics.com.au"}
-                    style={{ background: 'linear-gradient(to right, #2563EB, #16a34a)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '6px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}
-                  >
-                    ✉ EMAIL US TO BOOK
-                  </button>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'Arial, sans-serif', fontSize: '12px', color: '#888', marginRight: '6px' }}>or call</span>
-                    <a href="tel:+61421821220" style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: '13px', color: '#0F6E56', textDecoration: 'none' }}>+61 421 821 220</a>
+                    ))}
                   </div>
                 </div>
-              </>
+
+                <div style={{ padding: '32px 40px', background: 'var(--c-bg-light)', borderTop: '1px solid var(--c-divider)', display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'center', justifyContent: 'space-between', borderRadius: '0 0 32px 32px' }}>
+                  <Link href="/help-centre/contact" style={{ textDecoration: 'none' }}>
+                    <button
+                      style={{ background: 'var(--c-teal)', color: 'white', border: 'none', padding: '16px 32px', borderRadius: '999px', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
+                      className="hover:bg-[#22967A] transition-colors"
+                    >
+                      Request a quote
+                    </button>
+                  </Link>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--c-ink-mid)' }}>
+                    Contact <a href="tel:+61421821220" style={{ fontWeight: 700, color: 'var(--c-teal)', textDecoration: 'none' }}>+61 421 821 220</a>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
