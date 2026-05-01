@@ -47,7 +47,7 @@ export default function ProjectTransportPage() {
       {/* HERO BANNER */}
       <section
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.95) 0%, rgba(11,18,32,0.85) 50%, rgba(11,18,32,0.5) 100%), url('/Cards/Card 5.jpeg')`,
+          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.95) 0%, rgba(11,18,32,0.85) 50%, rgba(11,18,32,0.5) 100%), url('/Cards/Card 5.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           padding: '160px 40px 120px',

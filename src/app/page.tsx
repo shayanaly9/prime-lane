@@ -210,7 +210,7 @@ function HomeContent() {
         id="main-content"
         className="w-full"
         style={{
-          backgroundImage: `linear-gradient(to right, rgba(11,18,32,0.97) 0%, rgba(11,18,32,0.88) 55%, rgba(11,18,32,0.45) 100%), url('/Hero-Banner.jpeg')`,
+          backgroundImage: `linear-gradient(to right, rgba(11,18,32,0.97) 0%, rgba(11,18,32,0.88) 55%, rgba(11,18,32,0.45) 100%), url('/Hero-Banner.webp')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           minHeight: '100dvh',
@@ -359,10 +359,14 @@ function HomeContent() {
             >
               <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
                 <Image
-                  src="/Cards/Card 1.jpeg"
+                  src="/Cards/Card 1.jpg"
                   alt="Australia to Dubai"
                   width={600}
                   height={160}
+                  priority={true}
+                  quality={75}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k="
                   style={{
                     width: '100%',
                     height: '160px',
@@ -402,10 +406,14 @@ function HomeContent() {
             >
               <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
                 <Image
-                  src="/Cards/Card 2.jpeg"
+                  src="/Cards/Card 2.jpg"
                   alt="International Sea Freight"
                   width={600}
                   height={160}
+                  priority={true}
+                  quality={75}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k="
                   style={{
                     width: '100%',
                     height: '160px',
@@ -445,10 +453,14 @@ function HomeContent() {
             >
               <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
                 <Image
-                  src="/Cards/Card 3.jpeg"
+                  src="/Cards/Card 3.jpg"
                   alt="International Air Freight"
                   width={600}
                   height={160}
+                  priority={true}
+                  quality={75}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k="
                   style={{
                     width: '100%',
                     height: '160px',
@@ -488,10 +500,14 @@ function HomeContent() {
             >
               <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
                 <Image
-                  src="/Cards/Card 4.jpeg"
+                  src="/Cards/Card 4.jpg"
                   alt="Vehicle & Automotive Transport"
                   width={600}
                   height={160}
+                  priority={true}
+                  quality={75}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k="
                   style={{
                     width: '100%',
                     height: '160px',
@@ -531,10 +547,14 @@ function HomeContent() {
             >
               <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
                 <Image
-                  src="/Cards/Card 5.jpeg"
+                  src="/Cards/Card 5.jpg"
                   alt="Wharf & Container Cartage"
                   width={600}
                   height={160}
+                  priority={true}
+                  quality={75}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k="
                   style={{
                     width: '100%',
                     height: '160px',
@@ -574,10 +594,14 @@ function HomeContent() {
             >
               <div style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
                 <Image
-                  src="/Cards/Card 6.jpeg"
+                  src="/Cards/Card 6.jpg"
                   alt="Local & Industrial Freight"
                   width={600}
                   height={160}
+                  priority={true}
+                  quality={75}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k="
                   style={{
                     width: '100%',
                     height: '160px',
@@ -785,7 +809,7 @@ function HomeContent() {
       {/* GET IN TOUCH: WIDE EDITORIAL DESIGN */}
       <section id="contact" className="w-full px-5 py-32 md:py-48 md:px-10" style={{
         background: '#0B1220',
-        backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0.7) 0%, #0B1220 100%), url('/Logistics.jpeg')`,
+        backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0.7) 0%, #0B1220 100%), url('/Logistics.webp')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
@@ -908,9 +932,13 @@ function HomeContent() {
               <div className="flex flex-col">
                 <div style={{ height: '300px', width: '100%', position: 'relative' }}>
                   <Image
-                    src={`/Cards/Card ${openServiceModal}.jpeg`}
+                    src={`/Cards/Card ${openServiceModal}.jpg`}
                     alt="Service"
                     fill
+                    priority={true}
+                    quality={75}
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k="
                     style={{ objectFit: 'cover' }}
                   />
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,18,32,0.9) 0%, transparent 70%)' }} />

@@ -58,7 +58,7 @@ export default function IndustrialFreightPage() {
       {/* HERO BANNER */}
       <section
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.96) 0%, rgba(11,18,32,0.88) 50%, rgba(11,18,32,0.45) 100%), url('/Cards/Card 6.jpeg')`,
+          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.96) 0%, rgba(11,18,32,0.88) 50%, rgba(11,18,32,0.45) 100%), url('/Cards/Card 6.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           padding: '160px 40px 120px',

@@ -12,7 +12,7 @@ export default function Contact() {
       <section
         className="w-full flex flex-col items-center text-center"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.96) 0%, rgba(11,18,32,0.88) 50%, rgba(11,18,32,0.45) 100%), url('/Contacts.jpeg')`,
+          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.96) 0%, rgba(11,18,32,0.88) 50%, rgba(11,18,32,0.45) 100%), url('/Contacts.webp')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           padding: '180px 40px 140px',

@@ -33,7 +33,7 @@ export default function WhyChooseUs() {
           width: '100%', 
           padding: '160px 40px 120px', 
           textAlign: 'center',
-          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.96) 0%, rgba(11,18,32,0.88) 50%, rgba(11,18,32,0.45) 100%), url('/why-primlane.jpeg')`,
+          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.96) 0%, rgba(11,18,32,0.88) 50%, rgba(11,18,32,0.45) 100%), url('/why-primlane.webp')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
