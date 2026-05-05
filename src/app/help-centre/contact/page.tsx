@@ -1,359 +1,218 @@
 "use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export default function ContactEnquiries() {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    // Hero Entry
+    gsap.from(".hero-reveal", {
+      y: 40,
+      opacity: 0,
+      stagger: 0.1,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    // Card Stacking
+    const cards = gsap.utils.toArray(".contact-card");
+    cards.forEach((card: any, i) => {
+      gsap.from(card, {
+        y: 100 * (i + 1),
+        opacity: 0,
+        scrollTrigger: {
+          trigger: card,
+          start: "top 90%",
+          end: "top 70%",
+          scrub: true,
+        }
+      });
+    });
+
+    // Text Scrub
+    const textElements = gsap.utils.toArray(".scrub-text span");
+    gsap.to(textElements, {
+      opacity: 1,
+      stagger: 0.1,
+      scrollTrigger: {
+        trigger: ".scrub-container",
+        start: "top 80%",
+        end: "bottom 20%",
+        scrub: true,
+      }
+    });
+  }, { scope: container });
 
   return (
-    <main className="w-full flex flex-col items-center" style={{ background: '#fff' }}>
-      {/* HERO BANNER - Cinematic */}
-      <section 
-        style={{ 
-          width: '100%', 
-          padding: '160px 40px 120px', 
-          textAlign: 'center',
-          backgroundImage: `linear-gradient(135deg, rgba(11,18,32,0.96) 0%, rgba(11,18,32,0.88) 50%, rgba(11,18,32,0.45) 100%), url('/Contacts.webp')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '70dvh',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Ambient glow */}
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(74, 232, 154, 0.1) 0%, transparent 70%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
+    <main ref={container} className="overflow-x-hidden w-full max-w-full bg-white">
+      {/* SECTION: ATTENTION (HERO) - Cinematic Center */}
+      <section className="relative w-full py-64 md:py-80 px-6 md:px-10 flex flex-col items-center justify-center text-center">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/Contacts.webp" 
+            alt="Global Network" 
+            fill 
+            className="object-cover opacity-60 grayscale"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-ink/40 to-white" />
+        </div>
 
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '1200px', width: '100%' }}>
-          <div style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '8px', 
-            background: 'rgba(255, 255, 255, 0.05)', 
-            backdropFilter: 'blur(10px)', 
-            padding: '6px 14px', 
-            borderRadius: '6px', 
-            marginBottom: '32px',
-            border: '1px solid rgba(255, 255, 255, 0.1)' 
-          }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4AE89A' }} />
-            <span style={{ 
-              fontFamily: 'var(--font-heading)', 
-              color: 'rgba(255,255,255,0.7)', 
-              fontSize: '11px', 
-              fontWeight: 700, 
-              letterSpacing: '0.12em', 
-              textTransform: 'uppercase' 
-            }}>
-              CONTACT & ENQUIRIES
-            </span>
-          </div>
-          
-          <h1 style={{ 
-            fontFamily: 'var(--font-heading)', 
-            fontWeight: 800, 
-            fontSize: 'clamp(40px, 8vw, 72px)', 
-            lineHeight: 1.05, 
-            letterSpacing: '-0.04em', 
-            margin: '0 0 24px',
-            color: 'white'
-          }}>
-            Get in Touch<br />
-            <span style={{ color: 'var(--c-teal-light)' }}>With Our Experts</span>
+        <div className="relative z-10 w-full max-w-5xl">
+          <h1 className="hero-reveal text-6xl md:text-9xl font-bold tracking-tighter leading-[0.85] text-white mb-12">
+            Technical <br/> <span className="text-teal">Access.</span>
           </h1>
-          
-          <p style={{ 
-            fontFamily: 'var(--font-body)', 
-            fontSize: '18px', 
-            color: 'rgba(255,255,255,0.65)', 
-            maxWidth: '600px', 
-            lineHeight: 1.8, 
-            margin: '0 auto' 
-          }}>
-            Have a specific question or ready to book your next shipment? Our team is ready to assist you with tailored logistics solutions.
+          <p className="hero-reveal text-xl md:text-2xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-16">
+            Direct channels to our logistics engineers. No middle-tier support, just precision freight solutions.
           </p>
-        </div>
-      </section>
-
-      {/* CONTACT DETAILS SECTION */}
-      <section style={{ width: '100%', background: 'white', padding: '120px 40px', position: 'relative' }}>
-        {/* Subtle noise texture */}
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.015, pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-
-        <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative' }}>
-          <div style={{ marginBottom: '64px' }}>
-            <div style={{ 
-              fontFamily: 'var(--font-heading)', 
-              fontSize: '11px', 
-              letterSpacing: '0.14em', 
-              textTransform: 'uppercase', 
-              color: 'var(--c-teal)', 
-              fontWeight: 700, 
-              marginBottom: '16px' 
-            }}>
-              Reach Us
-            </div>
-            <h2 style={{ 
-              fontFamily: 'var(--font-heading)', 
-              fontWeight: 800, 
-              fontSize: 'clamp(28px, 4vw, 42px)', 
-              color: 'var(--c-ink)', 
-              marginBottom: '12px',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1
-            }}>
-              Contact Information
-            </h2>
-            <p style={{ 
-              fontFamily: 'var(--font-body)', 
-              fontSize: '16px', 
-              color: 'var(--c-ink-mid)', 
-              marginBottom: '48px',
-              lineHeight: 1.8
-            }}>
-              For all tracking-related queries, please include your cargo details in the subject line for a faster response.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-[100px]">
-            {/* Card 1 — Email */}
-            <div 
-              onMouseEnter={() => setHoveredCard(1)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                background: '#F9FAFB', 
-                borderRadius: '20px', 
-                padding: '48px 32px', 
-                border: hoveredCard === 1 ? '1px solid var(--c-teal-light)' : '1px solid #E5E7EB', 
-                borderTop: hoveredCard === 1 ? '4px solid var(--c-teal)' : '1px solid #E5E7EB', 
-                textAlign: 'center', 
-                transition: 'all 0.4s cubic-bezier(0.32,0.72,0,1)',
-                transform: hoveredCard === 1 ? 'translateY(-8px)' : 'translateY(0)',
-                boxShadow: hoveredCard === 1 ? '0 24px 48px rgba(11,18,32,0.08)' : '0 4px 12px rgba(11,18,32,0.02)'
-              }}
-            >
-              <div style={{ 
-                fontFamily: 'var(--font-heading)', 
-                fontWeight: 700, 
-                fontSize: '10px', 
-                letterSpacing: '0.12em', 
-                textTransform: 'uppercase', 
-                color: 'var(--c-teal)', 
-                marginBottom: '16px' 
-              }}>
-                Email
-              </div>
-              <h3 style={{ 
-                fontFamily: 'var(--font-heading)', 
-                fontWeight: 800, 
-                fontSize: '18px', 
-                color: 'var(--c-ink)', 
-                marginBottom: '16px',
-                letterSpacing: '-0.01em'
-              }}>
-                Send Us a Message
-              </h3>
-              <a href="mailto:contact@primelanelogistics.com.au" style={{ color: 'var(--c-teal)', fontWeight: 800, fontSize: '14px', textDecoration: 'none', borderBottom: '2px solid rgba(15,110,86,0.1)', paddingBottom: '2px' }}>contact@primelanelogistics.com.au</a>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--c-ink-soft)', marginTop: '16px' }}>We respond within 24h</div>
-            </div>
-
-            {/* Card 2 — Phone */}
-            <div 
-              onMouseEnter={() => setHoveredCard(2)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                background: '#F9FAFB', 
-                borderRadius: '20px', 
-                padding: '48px 32px', 
-                border: hoveredCard === 2 ? '1px solid var(--c-teal-light)' : '1px solid #E5E7EB', 
-                borderTop: hoveredCard === 2 ? '4px solid var(--c-teal)' : '1px solid #E5E7EB', 
-                textAlign: 'center', 
-                transition: 'all 0.4s cubic-bezier(0.32,0.72,0,1)',
-                transform: hoveredCard === 2 ? 'translateY(-8px)' : 'translateY(0)',
-                boxShadow: hoveredCard === 2 ? '0 24px 48_px rgba(11,18,32,0.08)' : '0 4px 12px rgba(11,18,32,0.02)'
-              }}
-            >
-              <div style={{ 
-                fontFamily: 'var(--font-heading)', 
-                fontWeight: 700, 
-                fontSize: '10px', 
-                letterSpacing: '0.12em', 
-                textTransform: 'uppercase', 
-                color: 'var(--c-teal)', 
-                marginBottom: '16px' 
-              }}>
-                Phone
-              </div>
-              <h3 style={{ 
-                fontFamily: 'var(--font-heading)', 
-                fontWeight: 800, 
-                fontSize: '18px', 
-                color: 'var(--c-ink)', 
-                marginBottom: '16px',
-                letterSpacing: '-0.01em'
-              }}>
-                Call Our Team
-              </h3>
-              <a href="tel:+61421821220" style={{ color: 'var(--c-teal)', fontWeight: 800, fontSize: '18px', textDecoration: 'none' }}>+61 421 821 220</a>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--c-ink-soft)', marginTop: '16px' }}>Available Mon–Fri, 9AM–5PM</div>
-            </div>
-
-            {/* Card 3 — Hours */}
-            <div 
-              onMouseEnter={() => setHoveredCard(3)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{ 
-                background: '#F9FAFB', 
-                borderRadius: '20px', 
-                padding: '48px 32px', 
-                border: hoveredCard === 3 ? '1px solid var(--c-teal-light)' : '1px solid #E5E7EB', 
-                borderTop: hoveredCard === 3 ? '4px solid var(--c-teal)' : '1px solid #E5E7EB', 
-                textAlign: 'center', 
-                transition: 'all 0.4s cubic-bezier(0.32,0.72,0,1)',
-                transform: hoveredCard === 3 ? 'translateY(-8px)' : 'translateY(0)',
-                boxShadow: hoveredCard === 3 ? '0 24px 48px rgba(11,18,32,0.08)' : '0 4px 12px rgba(11,18,32,0.02)'
-              }}
-            >
-              <div style={{ 
-                fontFamily: 'var(--font-heading)', 
-                fontWeight: 700, 
-                fontSize: '10px', 
-                letterSpacing: '0.12em', 
-                textTransform: 'uppercase', 
-                color: 'var(--c-teal)', 
-                marginBottom: '16px' 
-              }}>
-                Hours
-              </div>
-              <h3 style={{ 
-                fontFamily: 'var(--font-heading)', 
-                fontWeight: 800, 
-                fontSize: '18px', 
-                color: 'var(--c-ink)', 
-                marginBottom: '16px',
-                letterSpacing: '-0.01em'
-              }}>
-                Office Hours
-              </h3>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '18px', color: 'var(--c-ink)' }}>Monday – Friday</div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink-mid)', marginTop: '8px' }}>9:00 AM – 5:00 PM AEST</div>
-            </div>
-          </div>
-
-          {/* INFO BAND */}
-          <div style={{ 
-            background: '#F9FAFB', 
-            borderRadius: '24px', 
-            padding: '40px', 
-            border: '1px solid #E5E7EB', 
-            borderLeft: '4px solid var(--c-teal)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-          }}>
-            <h3 style={{ 
-              fontFamily: 'var(--font-heading)', 
-              fontWeight: 800, 
-              fontSize: '18px', 
-              color: 'var(--c-ink)', 
-              marginBottom: '12px',
-              letterSpacing: '-0.01em' 
-            }}>
-              Pro Tip — Faster Response
-            </h3>
-            <p style={{ 
-              fontFamily: 'var(--font-body)', 
-              fontSize: '15px', 
-              color: 'var(--c-ink-mid)', 
-              lineHeight: 1.8,
-              maxWidth: '800px'
-            }}>
-              When emailing us, include your cargo details in the subject line (e.g. &apos;2x vehicles AU→Dubai FCL enquiry&apos;). This helps our team route your enquiry to the right person immediately and speeds up your response time significantly.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA BAND */}
-      <section style={{ 
-        width: '100%', 
-        background: 'var(--c-ink)', 
-        padding: '120px 40px', 
-        textAlign: 'center', 
-        color: 'white',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(74, 232, 154, 0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
-          <h2 style={{ 
-            fontFamily: 'var(--font-heading)', 
-            fontWeight: 800, 
-            fontSize: 'clamp(32px, 5vw, 48px)', 
-            marginBottom: '24px', 
-            letterSpacing: '-0.03em' 
-          }}>
-            Ready to Book Your Shipment?
-          </h2>
-          <p style={{ 
-            fontFamily: 'var(--font-body)', 
-            fontSize: '18px', 
-            color: 'rgba(255,255,255,0.6)', 
-            maxWidth: '480px', 
-            margin: '0 auto 48px', 
-            lineHeight: 1.8 
-          }}>
-            Don&apos;t wait — reach out today and our team will have a personalised quote ready for you within one business day.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px' }}>
-            <Link href="mailto:contact@primelanelogistics.com.au" style={{ textDecoration: 'none' }}>
-              <button 
-                style={{ 
-                  background: 'var(--c-teal)', 
-                  color: 'white', 
-                  border: 'none', 
-                  padding: '18px 48px', 
-                  borderRadius: '999px', 
-                  fontFamily: 'var(--font-heading)', 
-                  fontWeight: 800, 
-                  fontSize: '14px', 
-                  textTransform: 'uppercase', 
-                  cursor: 'pointer', 
-                  transition: 'all 0.3s cubic-bezier(0.32,0.72,0,1)',
-                  boxShadow: '0 8px 24px rgba(15, 110, 86, 0.2)'
-                }}
-                className="hover:translate-y-[-2px] hover:shadow-[0_12px_32px_rgba(15,110,86,0.4)]"
-              >
-                EMAIL US NOW
+          <div className="hero-reveal flex flex-col md:flex-row items-center justify-center gap-6">
+            <Link href="mailto:contact@primelanelogistics.com.au" className="w-full md:w-auto">
+              <button className="px-12 py-6 bg-white text-ink font-bold rounded-full hover:scale-105 transition-transform">
+                Initiate Corridor Enquiry
               </button>
             </Link>
-            <a href="tel:+61421821220" style={{ textDecoration: 'none' }}>
-              <button 
-                style={{ 
-                  background: 'transparent', 
-                  color: 'white', 
-                  border: '1.5px solid rgba(255,255,255,0.25)', 
-                  padding: '18px 48px', 
-                  borderRadius: '999px', 
-                  fontFamily: 'var(--font-heading)', 
-                  fontWeight: 700, 
-                  fontSize: '14px', 
-                  textTransform: 'uppercase', 
-                  cursor: 'pointer', 
-                  transition: 'all 0.2s'
-                }}
-                className="hover:bg-white/10"
-              >
-                +61 421 821 220
+            <Link href="tel:+61421821220" className="w-full md:w-auto">
+              <button className="px-12 py-6 bg-teal text-white font-bold rounded-full hover:scale-105 transition-transform">
+                Call Operations Desk
               </button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* SECTION: INTEREST - Global Channels */}
+      <section className="w-full py-32 md:py-48 px-6 md:px-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-24 flex items-end justify-between">
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
+              Global <span className="inline-block w-24 h-12 bg-teal/10 rounded-full align-middle mx-4 overflow-hidden border border-teal/20 relative">
+                <Image src="/Cards/Card 1.jpg" alt="asset" fill className="object-cover" />
+              </span> Channels.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 grid-flow-dense">
+            {/* Card 1: Technical */}
+            <div className="contact-card bg-offwhite p-12 rounded-[3rem] min-h-[450px] flex flex-col justify-between border border-divider">
+              <div>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-teal mb-8 block">Protocol 01</span>
+                <h3 className="text-4xl font-bold tracking-tighter mb-4">Technical <br/> Enquiries</h3>
+                <p className="text-ink-mid text-lg leading-relaxed">Vehicle logistics, customs precision, and DG certification routing.</p>
+              </div>
+              <a href="mailto:contact@primelanelogistics.com.au" className="text-2xl font-bold tracking-tight hover:text-teal transition-colors">
+                technical@primelane
+              </a>
+            </div>
+
+            {/* Card 2: Commercial */}
+            <div className="contact-card bg-ink p-12 rounded-[3rem] min-h-[450px] flex flex-col justify-between shadow-2xl">
+              <div>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-teal mb-8 block">Protocol 02</span>
+                <h3 className="text-4xl font-bold tracking-tighter text-white mb-4">Commercial <br/> Bookings</h3>
+                <p className="text-white/40 text-lg leading-relaxed">FCL/LCL container corridor scheduling and volume agreements.</p>
+              </div>
+              <a href="mailto:contact@primelanelogistics.com.au" className="text-2xl font-bold tracking-tight text-white hover:text-teal transition-colors">
+                bookings@primelane
+              </a>
+            </div>
+
+            {/* Card 3: Support */}
+            <div className="contact-card bg-offwhite p-12 rounded-[3rem] min-h-[450px] flex flex-col justify-between border border-divider">
+              <div>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-teal mb-8 block">Protocol 03</span>
+                <h3 className="text-4xl font-bold tracking-tighter mb-4">Operations <br/> Support</h3>
+                <p className="text-ink-mid text-lg leading-relaxed">Tracking updates and real-time corridor technical status reporting.</p>
+              </div>
+              <a href="tel:+61421821220" className="text-2xl font-bold tracking-tight hover:text-teal transition-colors">
+                +61 421 821 220
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: DESIRE - Pro Tip Scrub */}
+      <section className="scrub-container w-full py-32 md:py-64 bg-offwhite border-y border-divider">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="flex justify-center items-center gap-4 mb-12">
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-teal">Technical Efficiency</span>
+          </div>
+          <h3 className="scrub-text text-3xl md:text-5xl font-medium tracking-tight leading-[1.4] text-ink">
+            {"To ensure a peak response time, please include your cargo specification and corridor route in the subject line. Example: '2x Prestige Vehicles AU to Dubai FCL'. This allows our automated triage to route your data directly to the relevant corridor specialist immediately.".split(" ").map((word, i) => (
+              <span key={i} className="opacity-10 inline-block mr-[0.25em]">{word}</span>
+            ))}
+          </h3>
+        </div>
+      </section>
+
+      {/* SECTION: ACTION - Operating Standards */}
+      <section className="w-full py-32 md:py-48 px-6 md:px-10">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-24">
+          <div className="w-full lg:w-1/2">
+            <h2 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] mb-12">
+              Operating <br/> <span className="text-teal">Standards.</span>
+            </h2>
+            <div className="space-y-12">
+               <div className="flex items-start gap-8">
+                  <span className="text-4xl font-bold text-teal/30 tabular">01</span>
+                  <div>
+                    <h4 className="text-2xl font-bold mb-2">Technical Response</h4>
+                    <p className="text-ink-mid">All technical queries are resolved within 24 hours by a specialist.</p>
+                  </div>
+               </div>
+               <div className="flex items-start gap-8">
+                  <span className="text-4xl font-bold text-teal/30 tabular">02</span>
+                  <div>
+                    <h4 className="text-2xl font-bold mb-2">Live Operations</h4>
+                    <p className="text-ink-mid">Active corridor tracking is available Mon–Fri, 9AM–5PM AEST.</p>
+                  </div>
+               </div>
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 bg-ink p-16 rounded-[4rem] text-center shadow-2xl relative overflow-hidden">
+             <div className="absolute inset-0 bg-gradient-to-tr from-teal/20 to-transparent opacity-50" />
+             <div className="relative z-10">
+               <h3 className="text-white text-5xl font-bold tracking-tighter mb-12">Corridor Access</h3>
+               <Link href="mailto:contact@primelanelogistics.com.au" className="block w-full py-8 bg-white text-ink font-bold rounded-full text-2xl hover:scale-105 transition-transform mb-8">
+                 Email Specialist
+               </Link>
+               <a href="tel:+61421821220" className="text-white/60 font-bold tracking-widest uppercase hover:text-white transition-colors">
+                 Emergency Technical Desk
+               </a>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full py-12 bg-white border-t border-divider overflow-hidden">
+        <div className="flex whitespace-nowrap animate-marquee">
+          {[1,2,3,4,5].map((i) => (
+            <div key={i} className="flex items-center gap-24 px-12">
+              <span className="text-sm font-bold text-ink/20 tracking-[0.5em] uppercase">ISO Certified</span>
+              <span className="text-sm font-bold text-ink/20 tracking-[0.5em] uppercase">DG Licensed</span>
+              <span className="text-sm font-bold text-ink/20 tracking-[0.5em] uppercase">IATA Member</span>
+              <span className="text-sm font-bold text-ink/20 tracking-[0.5em] uppercase">Technical Precision</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <style jsx global>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+      `}</style>
     </main>
   );
 }

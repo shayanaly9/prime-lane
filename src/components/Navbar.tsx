@@ -1,227 +1,166 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 export default function Navbar() {
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navRef = useRef<HTMLElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close menus on route change
   useEffect(() => {
-    setOpenDropdown(null);
-    setMobileMenuOpen(false);
+    setActiveDropdown(null);
+    setMobileOpen(false);
   }, [pathname]);
 
+  useGSAP(() => {
+    if (mobileOpen) {
+      gsap.fromTo(".mobile-link", 
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.1, duration: 0.5, ease: "power4.out" }
+      );
+    }
+  }, { dependencies: [mobileOpen] });
+
   return (
-    <nav ref={navRef} className="w-full sticky top-0 px-6 md:px-10 flex justify-between items-center" style={{ height: '68px', background: 'rgba(247,245,240,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(11,18,32,0.08)', zIndex: 1000 }}>
-      {/* Left Side */}
-      <div style={{ display: 'flex', alignItems: 'center', height: '100%', gap: '12px' }}>
-        <Link href="/">
+    <nav 
+      ref={navRef}
+      className={`fixed top-0 left-0 w-full z-[1000] transition-all duration-300 ease-out flex items-center justify-center
+        ${scrolled ? "py-4 md:py-4" : "py-0"}`}
+    >
+      {/* SECTION: FLOATING GLASS PILL */}
+      <div 
+        className={`relative flex items-center justify-between px-6 md:px-8 transition-all duration-300 ease-out
+          ${scrolled 
+            ? "w-full md:w-max md:min-w-[800px] h-16 bg-white/80 backdrop-blur-3xl md:rounded-full border-b md:border border-divider shadow-2xl" 
+            : "w-full h-20 md:h-24 bg-white/40 backdrop-blur-xl border-b border-divider shadow-none"}`}
+      >
+        {/* LOGO */}
+        <Link href="/" className="flex-shrink-0 group">
           <Image
             src="/Prime-lane-logo.png"
-            alt="PrimeLane Logistics"
-            width={110}
-            height={36}
-            style={{ objectFit: 'contain', width: 'auto', cursor: 'pointer' }}
+            alt="PrimeLane"
+            width={90}
+            height={28}
+            className="object-contain transition-transform duration-500 group-hover:scale-110 md:w-[100px]"
             priority
           />
         </Link>
-      </div>
 
-      {/* Mobile Hamburger Button */}
-      <button 
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="flex md:hidden items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 transition-colors"
-        style={{ border: 'none', background: 'none', cursor: 'pointer', zIndex: 110 }}
-      >
-        {mobileMenuOpen ? (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        ) : (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 8h16M4 16h16"/></svg>
-        )}
-      </button>
-
-      {/* Desktop Menu */}
-      <div className="hidden md:flex items-center gap-2">
-        {/* Services Dropdown */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setOpenDropdown(openDropdown === 'services' ? null : 'services')}
-            style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '13px', color: 'var(--c-ink)', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px', background: 'none', border: 'none', transition: 'color 0.2s' }}
-            className="hover:text-[#1A7A62]"
-          >
+        {/* DESKTOP LINKS */}
+        <div className="hidden md:flex items-center gap-1">
+          <Link href="/#services" className="px-5 py-2 text-[13px] font-bold tracking-tight text-ink hover:text-teal transition-colors">
             Services
-          </button>
-          {openDropdown === 'services' && (
-            <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, background: 'white', border: '1px solid rgba(11,18,32,0.08)', borderRadius: '12px', boxShadow: '0 16px 48px rgba(11,18,32,0.12)', minWidth: '260px', zIndex: 100, padding: '8px 0' }}>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-ink-soft)', padding: '10px 16px 6px', fontWeight: 700 }}>LOCAL TRANSPORT</div>
-              {[
-                ['Vehicle Logistics', '/services/vehicle-logistics'],
-                ['Wharf Cartage', '/services/wharf-cartage'],
-                ['Industrial Freight', '/services/industrial-freight'],
-                ['Project Transport', '/services/project-transport']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} className="hover:bg-[#f0f7f4]" style={{ display: 'block', padding: '10px 16px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink)', cursor: 'pointer', transition: 'background 0.15s', textDecoration: 'none' }}>{label}</Link>
-              ))}
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--c-ink-soft)', padding: '14px 16px 6px', fontWeight: 700 }}>INTERNATIONAL</div>
-              {[
-                ['Australia → Dubai (Primary Route)', '/services/australia-dubai'],
-                ['International Sea Freight', '/services/international-sea'],
-                ['International Air Freight', '/services/international-air']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} className="hover:bg-[#f0f7f4]" style={{ display: 'block', padding: '10px 16px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink)', cursor: 'pointer', transition: 'background 0.15s', textDecoration: 'none' }}>{label}</Link>
-              ))}
-            </div>
-          )}
-        </div>
+          </Link>
 
-        {/* About Dropdown */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setOpenDropdown(openDropdown === 'about' ? null : 'about')}
-            style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '13px', color: 'var(--c-ink)', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px', background: 'none', border: 'none', transition: 'color 0.2s' }}
-            className="hover:text-[#1A7A62]"
-          >
-            About
-          </button>
-          {openDropdown === 'about' && (
-            <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, background: 'white', border: '1px solid rgba(11,18,32,0.08)', borderRadius: '12px', boxShadow: '0 16px 48px rgba(11,18,32,0.12)', minWidth: '220px', zIndex: 100, padding: '8px 0' }}>
-              {[
-                ['Our story', '/about/our-story'],
-                ['Why choose PrimeLane', '/about/why-choose-us'],
-                ['Certifications & accreditations', '/about/certifications']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} className="hover:bg-[#f0f7f4]" style={{ display: 'block', padding: '10px 16px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink)', cursor: 'pointer', transition: 'background 0.15s', textDecoration: 'none' }}>{label}</Link>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Help Centre Dropdown */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setOpenDropdown(openDropdown === 'help' ? null : 'help')}
-            style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '13px', color: 'var(--c-ink)', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px', background: 'none', border: 'none', transition: 'color 0.2s' }}
-            className="hover:text-[#1A7A62]"
-          >
-            Help centre
-          </button>
-          {openDropdown === 'help' && (
-            <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, background: 'white', border: '1px solid rgba(11,18,32,0.08)', borderRadius: '12px', boxShadow: '0 16px 48px rgba(11,18,32,0.12)', minWidth: '240px', zIndex: 100, padding: '8px 0' }}>
-              {[
-                ['Frequently asked questions', '/#faq'],
-                ['Contact & enquiries', '/help-centre/contact'],
-                ['Shipping routes & transit times', '/help-centre/shipping-routes']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} className="hover:bg-[#f0f7f4]" style={{ display: 'block', padding: '10px 16px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-ink)', cursor: 'pointer', transition: 'background 0.15s', textDecoration: 'none' }}>{label}</Link>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* CTA Button */}
-        <Link
-          href="/contact"
-          style={{ background: 'var(--c-teal)', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '999px', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '13px', cursor: 'pointer', marginLeft: '12px', textDecoration: 'none', display: 'inline-block', transition: 'background 0.2s, transform 0.2s', letterSpacing: '0.01em' }}
-          className="hover:bg-[#22967A] hover:scale-[1.03] active:scale-[0.98]"
-        >
-          Get in touch
-        </Link>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div 
-          style={{ 
-            position: 'fixed', 
-            top: '68px', 
-            left: 0, 
-            width: '100%', 
-            height: 'calc(100vh - 68px)', 
-            background: 'white', 
-            zIndex: 100, 
-            overflowY: 'auto',
-            padding: '24px 20px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '32px'
-          }}
-        >
-          {/* Services Mobile */}
-          <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', fontWeight: 700, color: 'var(--c-teal)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '16px' }}>Services</div>
-            <div className="flex flex-col gap-4">
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', fontWeight: 700, color: 'var(--c-ink-soft)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>LOCAL TRANSPORT</div>
-              {[
-                ['Vehicle Logistics', '/services/vehicle-logistics'],
-                ['Wharf Cartage', '/services/wharf-cartage'],
-                ['Industrial Freight', '/services/industrial-freight'],
-                ['Project Transport', '/services/project-transport']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink)', textDecoration: 'none', paddingLeft: '8px' }}>{label}</Link>
-              ))}
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', fontWeight: 700, color: 'var(--c-ink-soft)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '8px' }}>INTERNATIONAL</div>
-              {[
-                ['Australia → Dubai (Primary Route)', '/services/australia-dubai'],
-                ['International Sea Freight', '/services/international-sea'],
-                ['International Air Freight', '/services/international-air']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink)', textDecoration: 'none', paddingLeft: '8px' }}>{label}</Link>
-              ))}
-            </div>
+          {/* DROPDOWN: ABOUT */}
+          <div className="relative group" onMouseEnter={() => setActiveDropdown('about')} onMouseLeave={() => setActiveDropdown(null)}>
+             <button className="px-5 py-2 text-[13px] font-bold tracking-tight text-ink flex items-center gap-2 group-hover:text-teal transition-colors">
+               About
+               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover:rotate-180 transition-transform"><path d="M6 9l6 6 6-6"/></svg>
+             </button>
+             <div className={`absolute top-full right-0 pt-4 transition-all duration-500 ${activeDropdown === 'about' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                <div className="w-56 bg-white/90 backdrop-blur-3xl border border-divider rounded-[2rem] p-4 shadow-2xl">
+                   {[
+                     ['Our story', '/about/our-story'],
+                     ['Technical Advantages', '/about/why-choose-us'],
+                     ['Accreditations', '/about/certifications']
+                   ].map(([label, href]) => (
+                     <Link key={label} href={href} className="block px-6 py-3 rounded-2xl text-[12px] font-medium text-ink-mid hover:bg-teal hover:text-white transition-all">
+                       {label}
+                     </Link>
+                   ))}
+                </div>
+             </div>
           </div>
 
-          {/* About Mobile */}
-          <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', fontWeight: 700, color: 'var(--c-teal)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '16px' }}>About</div>
-            <div className="flex flex-col gap-4">
-              {[
-                ['Our story', '/about/our-story'],
-                ['Why choose PrimeLane', '/about/why-choose-us'],
-                ['Certifications & accreditations', '/about/certifications']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink)', textDecoration: 'none' }}>{label}</Link>
-              ))}
-            </div>
+          {/* DROPDOWN: HELP */}
+          <div className="relative group" onMouseEnter={() => setActiveDropdown('help')} onMouseLeave={() => setActiveDropdown(null)}>
+             <button className="px-5 py-2 text-[13px] font-bold tracking-tight text-ink flex items-center gap-2 group-hover:text-teal transition-colors">
+               Help Centre
+               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover:rotate-180 transition-transform"><path d="M6 9l6 6 6-6"/></svg>
+             </button>
+             <div className={`absolute top-full right-0 pt-4 transition-all duration-500 ${activeDropdown === 'help' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                <div className="w-56 bg-white/90 backdrop-blur-3xl border border-divider rounded-[2rem] p-4 shadow-2xl">
+                   {[
+                     ['Protocol FAQs', '/#faq'],
+                     ['Technical Contact', '/help-centre/contact'],
+                     ['Corridor Routes', '/help-centre/shipping-routes']
+                   ].map(([label, href]) => (
+                     <Link key={label} href={href} className="block px-6 py-3 rounded-2xl text-[12px] font-medium text-ink-mid hover:bg-teal hover:text-white transition-all">
+                       {label}
+                     </Link>
+                   ))}
+                </div>
+             </div>
           </div>
 
-          {/* Help Mobile */}
-          <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '11px', fontWeight: 700, color: 'var(--c-teal)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '16px' }}>Help centre</div>
-            <div className="flex flex-col gap-4">
-              {[
-                ['Frequently asked questions', '/#faq'],
-                ['Contact & enquiries', '/help-centre/contact'],
-                ['Shipping routes & transit times', '/help-centre/shipping-routes']
-              ].map(([label, href]) => (
-                <Link key={label} href={href} style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--c-ink)', textDecoration: 'none' }}>{label}</Link>
-              ))}
-            </div>
-          </div>
-
-          <Link
-            href="/contact"
-            style={{ background: 'var(--c-teal)', color: 'white', border: 'none', padding: '16px', borderRadius: '12px', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '15px', textAlign: 'center', textDecoration: 'none' }}
+          <Link 
+            href="/help-centre/contact" 
+            style={{ 
+              background: 'var(--c-teal)', 
+              color: 'white', 
+              boxShadow: '0 8px 30px rgba(26, 122, 98, 0.2)' 
+            }}
+            className="ml-4 px-8 py-3 text-[11px] font-bold rounded-full hover:scale-105 active:scale-95 transition-all uppercase tracking-[0.15em] border border-white/10"
           >
             Get in touch
           </Link>
         </div>
-      )}
+
+        {/* MOBILE TRIGGER */}
+        <button 
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="flex md:hidden w-10 h-10 items-center justify-center rounded-full hover:bg-black/5 transition-colors relative z-[1100]"
+        >
+          <div className="w-6 flex flex-col gap-1.5">
+             <div className={`h-[2px] bg-ink transition-all duration-500 ${mobileOpen ? 'rotate-45 translate-y-[8px]' : ''}`} />
+             <div className={`h-[2px] bg-ink transition-all duration-500 ${mobileOpen ? 'opacity-0' : ''}`} />
+             <div className={`h-[2px] bg-ink transition-all duration-500 ${mobileOpen ? '-rotate-45 -translate-y-[8px]' : ''}`} />
+          </div>
+        </button>
+      </div>
+
+      {/* MOBILE MODAL: FLUID ISLAND REVEAL */}
+      <div className={`fixed inset-0 bg-white z-[1050] flex flex-col items-center justify-center px-10 transition-all duration-1000 ease-[cubic-bezier(0.32,0.72,0,1)]
+        ${mobileOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full"}`}
+      >
+        <div className="flex flex-col items-center gap-12 text-center">
+           {[
+             ['Services', '/#services'],
+             ['Our Story', '/about/our-story'],
+             ['Technical Routes', '/help-centre/shipping-routes'],
+             ['Accreditations', '/about/certifications'],
+             ['Contact', '/help-centre/contact']
+           ].map(([label, href]) => (
+             <Link 
+               key={label} 
+               href={href} 
+               className="mobile-link text-5xl font-bold tracking-tighter text-ink hover:text-teal transition-colors"
+             >
+               {label}
+             </Link>
+           ))}
+        </div>
+        
+        <div className="absolute bottom-20 w-full px-10">
+           <Link href="/help-centre/contact" className="block w-full py-6 bg-teal text-white text-center rounded-full font-bold uppercase tracking-[0.2em]">
+             Initiate Protocol
+           </Link>
+        </div>
+      </div>
     </nav>
   );
 }

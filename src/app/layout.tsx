@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
-import { Raleway, Open_Sans } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import ChatWidget from "./components/ChatWidget";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const raleway = Raleway({
-  variable: "--font-raleway",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
-});
-
-const openSans = Open_Sans({
-  variable: "--font-open-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -40,9 +34,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${raleway.variable} ${openSans.variable} h-full antialiased`}
+      className={`${outfit.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-body">
+      <body className="min-h-full flex flex-col font-outfit">
         <Navbar />
         {children}
         <Footer />
