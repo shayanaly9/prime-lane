@@ -74,12 +74,12 @@ export default function ContactEnquiries() {
           </p>
           <div className="hero-reveal flex flex-col md:flex-row items-center justify-center gap-6">
             <Link href="mailto:contact@primelanelogistics.com.au" className="w-full md:w-auto">
-              <button className="px-12 py-6 bg-white text-ink font-bold rounded-full hover:scale-105 transition-transform">
+              <button className="w-full px-8 md:px-12 py-5 md:py-6 bg-white text-ink font-bold rounded-full hover:scale-105 transition-transform">
                 Initiate Corridor Enquiry
               </button>
             </Link>
             <Link href="tel:+61421821220" className="w-full md:w-auto">
-              <button className="px-12 py-6 bg-teal text-white font-bold rounded-full hover:scale-105 transition-transform">
+              <button className="w-full px-8 md:px-12 py-5 md:py-6 bg-teal text-white font-bold rounded-full hover:scale-105 transition-transform">
                 Call Operations Desk
               </button>
             </Link>
@@ -91,7 +91,7 @@ export default function ContactEnquiries() {
       <section className="w-full py-32 md:py-48 px-6 md:px-10">
         <div className="max-w-7xl mx-auto">
           <div className="mb-24 flex items-end justify-between">
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter leading-none">
               Global <span className="inline-block w-24 h-12 bg-teal/10 rounded-full align-middle mx-4 overflow-hidden border border-teal/20 relative">
                 <Image src="/Cards/Card 1.jpg" alt="asset" fill className="object-cover" />
               </span> Channels.
@@ -100,37 +100,37 @@ export default function ContactEnquiries() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 grid-flow-dense">
             {/* Card 1: Technical */}
-            <div className="contact-card bg-offwhite p-12 rounded-[3rem] min-h-[450px] flex flex-col justify-between border border-divider">
+            <div className="contact-card bg-offwhite p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] min-h-[350px] md:min-h-[450px] flex flex-col justify-between border border-divider">
               <div>
                 <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-teal mb-8 block">Protocol 01</span>
-                <h3 className="text-4xl font-bold tracking-tighter mb-4">Technical <br/> Enquiries</h3>
+                <h3 className="text-3xl md:text-4xl font-bold tracking-tighter mb-4">Technical <br/> Enquiries</h3>
                 <p className="text-ink-mid text-lg leading-relaxed">Vehicle logistics, customs precision, and DG certification routing.</p>
               </div>
-              <a href="mailto:contact@primelanelogistics.com.au" className="text-2xl font-bold tracking-tight hover:text-teal transition-colors">
+              <a href="mailto:contact@primelanelogistics.com.au" className="text-xl md:text-2xl font-bold tracking-tight hover:text-teal transition-colors">
                 technical@primelane
               </a>
             </div>
 
             {/* Card 2: Commercial */}
-            <div className="contact-card bg-ink p-12 rounded-[3rem] min-h-[450px] flex flex-col justify-between shadow-2xl">
+            <div className="contact-card bg-ink p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] min-h-[350px] md:min-h-[450px] flex flex-col justify-between shadow-2xl">
               <div>
-                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-teal mb-8 block">Protocol 02</span>
-                <h3 className="text-4xl font-bold tracking-tighter text-white mb-4">Commercial <br/> Bookings</h3>
-                <p className="text-white/40 text-lg leading-relaxed">FCL/LCL container corridor scheduling and volume agreements.</p>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/70 mb-8 block">Protocol 02</span>
+                <h3 className="text-3xl md:text-4xl font-bold tracking-tighter text-white mb-4">Commercial <br/> Bookings</h3>
+                <p className="text-white/80 text-lg leading-relaxed">FCL/LCL container corridor scheduling and volume agreements.</p>
               </div>
-              <a href="mailto:contact@primelanelogistics.com.au" className="text-2xl font-bold tracking-tight text-white hover:text-teal transition-colors">
+              <a href="mailto:bookings@primelanelogistics.com.au" className="text-xl md:text-2xl font-bold tracking-tight text-white hover:text-teal transition-colors">
                 bookings@primelane
               </a>
             </div>
 
             {/* Card 3: Support */}
-            <div className="contact-card bg-offwhite p-12 rounded-[3rem] min-h-[450px] flex flex-col justify-between border border-divider">
+            <div className="contact-card bg-offwhite p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] min-h-[350px] md:min-h-[450px] flex flex-col justify-between border border-divider">
               <div>
                 <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-teal mb-8 block">Protocol 03</span>
-                <h3 className="text-4xl font-bold tracking-tighter mb-4">Operations <br/> Support</h3>
+                <h3 className="text-3xl md:text-4xl font-bold tracking-tighter mb-4">Operations <br/> Support</h3>
                 <p className="text-ink-mid text-lg leading-relaxed">Tracking updates and real-time corridor technical status reporting.</p>
               </div>
-              <a href="tel:+61421821220" className="text-2xl font-bold tracking-tight hover:text-teal transition-colors">
+              <a href="tel:+61421821220" className="text-xl md:text-2xl font-bold tracking-tight hover:text-teal transition-colors">
                 +61 421 821 220
               </a>
             </div>
@@ -156,7 +156,7 @@ export default function ContactEnquiries() {
       <section className="w-full py-32 md:py-48 px-6 md:px-10">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-24">
           <div className="w-full lg:w-1/2">
-            <h2 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] mb-12">
+            <h2 className="text-5xl md:text-6xl lg:text-8xl font-bold tracking-tighter leading-[0.9] mb-12">
               Operating <br/> <span className="text-teal">Standards.</span>
             </h2>
             <div className="space-y-12">
@@ -176,11 +176,11 @@ export default function ContactEnquiries() {
                </div>
             </div>
           </div>
-          <div className="w-full lg:w-1/2 bg-ink p-16 rounded-[4rem] text-center shadow-2xl relative overflow-hidden">
+          <div className="w-full lg:w-1/2 bg-ink p-10 md:p-16 rounded-[2.5rem] md:rounded-[4rem] text-center shadow-2xl relative overflow-hidden">
              <div className="absolute inset-0 bg-gradient-to-tr from-teal/20 to-transparent opacity-50" />
              <div className="relative z-10">
-               <h3 className="text-white text-5xl font-bold tracking-tighter mb-12">Corridor Access</h3>
-               <Link href="mailto:contact@primelanelogistics.com.au" className="block w-full py-8 bg-white text-ink font-bold rounded-full text-2xl hover:scale-105 transition-transform mb-8">
+               <h3 className="text-white text-3xl md:text-5xl font-bold tracking-tighter mb-8 md:mb-12">Corridor Access</h3>
+               <Link href="mailto:contact@primelanelogistics.com.au" className="block w-full py-6 md:py-8 bg-white text-ink font-bold rounded-full text-xl md:text-2xl hover:scale-105 transition-transform mb-6 md:mb-8">
                  Email Specialist
                </Link>
                <a href="tel:+61421821220" className="text-white/60 font-bold tracking-widest uppercase hover:text-white transition-colors">

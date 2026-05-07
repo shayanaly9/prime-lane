@@ -51,8 +51,13 @@ const serviceModals = [
 
 export default function ServicesSection() {
   const [openServiceModal, setOpenServiceModal] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
   const container = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useGSAP(() => {
     // Reveal Header
@@ -103,38 +108,40 @@ export default function ServicesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:grid-flow-dense">
-          {serviceModals.map((service) => (
-            <div
-              key={service.id}
-              onClick={() => setOpenServiceModal(service.id)}
-              className={`bento-card group relative overflow-hidden rounded-[2.5rem] cursor-pointer bg-ink shadow-2xl transition-all duration-700 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] ${service.span}`}
-              style={{ minHeight: '320px' }}
-            >
-              <Image
-                src={`/Cards/Card ${service.id}.jpg`}
-                alt={service.title}
-                fill
-                priority={service.id <= 2}
-                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110 opacity-70 group-hover:opacity-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-500" />
-              
-              <div className="absolute bottom-0 left-0 p-10 w-full z-10">
-                <h3 className="text-white text-3xl font-bold mb-3 tracking-tighter group-hover:translate-x-2 transition-transform duration-500">
-                  {service.title}
-                </h3>
-                <p className="text-white/70 text-sm md:text-base line-clamp-2 max-w-xs transition-colors duration-500 group-hover:text-white">
-                  {service.subtitle}
-                </p>
-              </div>
+        {mounted && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:grid-flow-dense">
+            {serviceModals.map((service) => (
+              <div
+                key={service.id}
+                onClick={() => setOpenServiceModal(service.id)}
+                className={`bento-card group relative overflow-hidden rounded-[2.5rem] cursor-pointer bg-ink shadow-2xl transition-all duration-700 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] ${service.span}`}
+                style={{ minHeight: '320px' }}
+              >
+                <Image
+                  src={`/Cards/Card ${service.id}.jpg`}
+                  alt={service.title}
+                  fill
+                  priority={service.id <= 2}
+                  className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110 opacity-70 group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-500" />
+                
+                <div className="absolute bottom-0 left-0 p-10 w-full z-10">
+                  <h3 className="text-white text-3xl font-bold mb-3 tracking-tighter group-hover:translate-x-2 transition-transform duration-500">
+                    {service.title}
+                  </h3>
+                  <p className="text-white/70 text-sm md:text-base line-clamp-2 max-w-xs transition-colors duration-500 group-hover:text-white">
+                    {service.subtitle}
+                  </p>
+                </div>
 
-              <div className="absolute top-8 right-8 w-14 h-14 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100 z-10">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                <div className="absolute top-8 right-8 w-14 h-14 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100 z-10">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {openServiceModal && (
